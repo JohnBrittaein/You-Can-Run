@@ -21,4 +21,8 @@ dependencyResolutionManagement {
 
 rootProject.name = "youcanrun"
 include(":app")
- 
+include(":core")
+include(":ar")
+include(":sensors")
+include(":audio")
+include(":ui")

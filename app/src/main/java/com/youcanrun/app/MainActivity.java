@@ -1,4 +1,4 @@
-package com.example.youcanrun;
+package com.youcanrun.app;
 
 import android.os.Bundle;
 
@@ -7,6 +7,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+
+// This will import the modules once they are created.
+//import com.youcanrun.ar;
+//import com.youcanrun.audio;
+//import com.youcanrun.core;
+//import com.youcanrun.sensors;
+import com.youcanrun.ui.R;
 
 public class MainActivity extends AppCompatActivity {
 
