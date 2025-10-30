@@ -8,7 +8,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-// This will import the modules once they are created.
+// Import Modules
 //import com.youcanrun.ar;
 //import com.youcanrun.audio;
 //import com.youcanrun.core;

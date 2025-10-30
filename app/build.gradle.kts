@@ -41,6 +41,8 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
+
+    // Include project modules
     implementation(project(":core"))
     implementation(project(":ar"))
     implementation(project(":sensors"))
