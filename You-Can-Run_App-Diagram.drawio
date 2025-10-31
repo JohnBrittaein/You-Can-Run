@@ -4,8 +4,11 @@
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
+        <mxCell id="8nHcXKAZ5uG0m_UUr_Kl-44" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="isqQ4OO7kmcKETVQ4hR7-13" target="isqQ4OO7kmcKETVQ4hR7-17">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
         <mxCell id="isqQ4OO7kmcKETVQ4hR7-13" value="&lt;div&gt;&lt;b&gt;:ar&lt;/b&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;ar library handles the creation, logic, and assets needed for the AR portion of the app.&lt;/span&gt;&lt;/div&gt;" style="swimlane;whiteSpace=wrap;html=1;startSize=100;" parent="1" vertex="1">
-          <mxGeometry x="-200" y="110" width="200" height="240" as="geometry" />
+          <mxGeometry x="700" y="680" width="200" height="240" as="geometry" />
         </mxCell>
         <mxCell id="8nHcXKAZ5uG0m_UUr_Kl-2" value="Classes" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" vertex="1" parent="isqQ4OO7kmcKETVQ4hR7-13">
           <mxGeometry x="10" y="120" width="180" height="60" as="geometry" />
@@ -13,8 +16,11 @@
         <mxCell id="8nHcXKAZ5uG0m_UUr_Kl-3" value="ARSessionManager" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" vertex="1" parent="8nHcXKAZ5uG0m_UUr_Kl-2">
           <mxGeometry y="30" width="180" height="30" as="geometry" />
         </mxCell>
+        <mxCell id="8nHcXKAZ5uG0m_UUr_Kl-22" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="isqQ4OO7kmcKETVQ4hR7-15" target="isqQ4OO7kmcKETVQ4hR7-16">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
         <mxCell id="isqQ4OO7kmcKETVQ4hR7-15" value="&lt;div&gt;&lt;b&gt;:sensors&lt;/b&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;Sensor Library handles communication and interprets the phone&#39;s internal sensors into useable data&lt;/span&gt;&lt;/div&gt;" style="swimlane;whiteSpace=wrap;html=1;startSize=100;" parent="1" vertex="1">
-          <mxGeometry x="40" y="110" width="200" height="240" as="geometry" />
+          <mxGeometry x="-240" y="680" width="200" height="240" as="geometry" />
         </mxCell>
         <mxCell id="8nHcXKAZ5uG0m_UUr_Kl-6" value="Classes" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" vertex="1" parent="isqQ4OO7kmcKETVQ4hR7-15">
           <mxGeometry x="10" y="120" width="180" height="60" as="geometry" />
@@ -22,8 +28,11 @@
         <mxCell id="8nHcXKAZ5uG0m_UUr_Kl-7" value="MotionTracker" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" vertex="1" parent="8nHcXKAZ5uG0m_UUr_Kl-6">
           <mxGeometry y="30" width="180" height="30" as="geometry" />
         </mxCell>
+        <mxCell id="8nHcXKAZ5uG0m_UUr_Kl-37" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="isqQ4OO7kmcKETVQ4hR7-16" target="isqQ4OO7kmcKETVQ4hR7-17">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
         <mxCell id="isqQ4OO7kmcKETVQ4hR7-16" value="&lt;div&gt;&lt;b&gt;:core&lt;/b&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;Core library handles core game logic, such as the players score, monsters distance, etc.&lt;/span&gt;&lt;/div&gt;" style="swimlane;whiteSpace=wrap;html=1;startSize=100;" parent="1" vertex="1">
-          <mxGeometry x="280" y="110" width="200" height="240" as="geometry" />
+          <mxGeometry x="60" y="680" width="200" height="240" as="geometry" />
         </mxCell>
         <mxCell id="8nHcXKAZ5uG0m_UUr_Kl-8" value="Classes" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" vertex="1" parent="isqQ4OO7kmcKETVQ4hR7-16">
           <mxGeometry x="10" y="120" width="180" height="60" as="geometry" />
@@ -31,8 +40,20 @@
         <mxCell id="8nHcXKAZ5uG0m_UUr_Kl-9" value="CoreLogicManager" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" vertex="1" parent="8nHcXKAZ5uG0m_UUr_Kl-8">
           <mxGeometry y="30" width="180" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="isqQ4OO7kmcKETVQ4hR7-17" value="&lt;div&gt;&lt;b&gt;:app&lt;/b&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;Contains the main entry point for app, other app metadata and orchestrates communication between the other modules.&lt;/span&gt;&lt;/div&gt;" style="swimlane;whiteSpace=wrap;html=1;startSize=100;" parent="1" vertex="1">
-          <mxGeometry x="510" y="110" width="200" height="240" as="geometry" />
+        <mxCell id="8nHcXKAZ5uG0m_UUr_Kl-38" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="isqQ4OO7kmcKETVQ4hR7-17" target="isqQ4OO7kmcKETVQ4hR7-13">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="8nHcXKAZ5uG0m_UUr_Kl-39" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="isqQ4OO7kmcKETVQ4hR7-17" target="isqQ4OO7kmcKETVQ4hR7-20">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="8nHcXKAZ5uG0m_UUr_Kl-40" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="isqQ4OO7kmcKETVQ4hR7-17" target="isqQ4OO7kmcKETVQ4hR7-18">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="8nHcXKAZ5uG0m_UUr_Kl-46" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="isqQ4OO7kmcKETVQ4hR7-17" target="isqQ4OO7kmcKETVQ4hR7-16">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="isqQ4OO7kmcKETVQ4hR7-17" value="&lt;div&gt;&lt;b&gt;:app&lt;/b&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;Contains the main entry point for app, other app metadata.&lt;/span&gt;&lt;/div&gt;" style="swimlane;whiteSpace=wrap;html=1;startSize=100;" parent="1" vertex="1">
+          <mxGeometry x="390" y="680" width="200" height="240" as="geometry" />
         </mxCell>
         <mxCell id="8nHcXKAZ5uG0m_UUr_Kl-10" value="Classes" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" vertex="1" parent="isqQ4OO7kmcKETVQ4hR7-17">
           <mxGeometry x="10" y="120" width="180" height="60" as="geometry" />
@@ -40,8 +61,11 @@
         <mxCell id="8nHcXKAZ5uG0m_UUr_Kl-11" value="&lt;div&gt;MainActivity&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" vertex="1" parent="8nHcXKAZ5uG0m_UUr_Kl-10">
           <mxGeometry y="30" width="180" height="30" as="geometry" />
         </mxCell>
+        <mxCell id="8nHcXKAZ5uG0m_UUr_Kl-45" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="isqQ4OO7kmcKETVQ4hR7-18" target="isqQ4OO7kmcKETVQ4hR7-17">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
         <mxCell id="isqQ4OO7kmcKETVQ4hR7-18" value="&lt;div&gt;&lt;b&gt;:audio&lt;/b&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;Audio library handles starting/stopping audio elements for the app and contains audio assets&lt;/span&gt;&lt;/div&gt;" style="swimlane;whiteSpace=wrap;html=1;startSize=100;" parent="1" vertex="1">
-          <mxGeometry x="740" y="110" width="200" height="240" as="geometry">
+          <mxGeometry x="700" y="940" width="200" height="240" as="geometry">
             <mxRectangle x="740" y="110" width="530" height="100" as="alternateBounds" />
           </mxGeometry>
         </mxCell>
@@ -51,14 +75,32 @@
         <mxCell id="8nHcXKAZ5uG0m_UUr_Kl-13" value="AudioManager" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" vertex="1" parent="8nHcXKAZ5uG0m_UUr_Kl-12">
           <mxGeometry y="30" width="180" height="30" as="geometry" />
         </mxCell>
+        <mxCell id="8nHcXKAZ5uG0m_UUr_Kl-43" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="isqQ4OO7kmcKETVQ4hR7-20" target="isqQ4OO7kmcKETVQ4hR7-17">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
         <mxCell id="isqQ4OO7kmcKETVQ4hR7-20" value="&lt;div&gt;&lt;b&gt;:ui&lt;/b&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;font-weight: normal;&quot;&gt;UI Library contains layouts, user-interaction, and all visual elements&lt;/span&gt;&lt;/div&gt;" style="swimlane;whiteSpace=wrap;html=1;startSize=100;" parent="1" vertex="1">
-          <mxGeometry x="960" y="110" width="200" height="240" as="geometry" />
+          <mxGeometry x="700" y="420" width="200" height="240" as="geometry" />
         </mxCell>
         <mxCell id="8nHcXKAZ5uG0m_UUr_Kl-14" value="Classes" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" vertex="1" parent="isqQ4OO7kmcKETVQ4hR7-20">
           <mxGeometry x="10" y="120" width="180" height="60" as="geometry" />
         </mxCell>
         <mxCell id="8nHcXKAZ5uG0m_UUr_Kl-15" value="UIManager" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;spacingLeft=4;spacingRight=4;overflow=hidden;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;rotatable=0;whiteSpace=wrap;html=1;" vertex="1" parent="8nHcXKAZ5uG0m_UUr_Kl-14">
           <mxGeometry y="30" width="180" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="8nHcXKAZ5uG0m_UUr_Kl-28" value="Speed/Motion" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="-30" y="770" width="80" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="8nHcXKAZ5uG0m_UUr_Kl-42" value="&lt;h1 style=&quot;margin-top: 0px;&quot;&gt;You Can Run Core Structure&lt;/h1&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;" style="text;html=1;whiteSpace=wrap;overflow=hidden;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="-240" y="430" width="470" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="8nHcXKAZ5uG0m_UUr_Kl-47" value="Orchestrates/Passes messages between modules" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="390" y="570" width="190" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="8nHcXKAZ5uG0m_UUr_Kl-48" value="Listens for events, like game events and user interaction" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="380" y="630" width="170" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="8nHcXKAZ5uG0m_UUr_Kl-49" value="Game Brain" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="100" y="640" width="110" height="30" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
