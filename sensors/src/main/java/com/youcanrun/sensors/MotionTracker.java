@@ -8,7 +8,11 @@ import android.hardware.SensorManager;
 import android.util.Log;
 
 /**
+ * Uses the onboard sensors to track the player's motion
  *
+ * @author John Brittain
+ * @version 0.1
+ * @since 2025-11-05
  */
 public class MotionTracker implements SensorEventListener {
     private static final String TAG = "MotionTracker";
@@ -19,6 +23,12 @@ public class MotionTracker implements SensorEventListener {
     private Sensor mAccelerometer;
     private float currentSpeed;
 
+    /**
+     * Initializes the motion tracker object
+     * Contains a reference to the application context
+     * And gets the default accelerometer sensor(s)
+     * @param context
+     */
     public MotionTracker(Context context) {
         this.context = context;
         mSensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
@@ -38,6 +48,8 @@ public class MotionTracker implements SensorEventListener {
         // Because the sensor type is declared as TYPE_LINEAR_ACCELERATION, there is no
         // need to account for gravity to calculate speed.
 
+        // Speed is calculates as M/S
+
         // This calculates speed by integrating acceleration over a set interval of time
         if(lastTimeStamp != -1){
             float dt = (event.timestamp - lastTimeStamp) * 1.0e-9f; // ns -> s
@@ -55,10 +67,11 @@ public class MotionTracker implements SensorEventListener {
                 // Reset if small
                 if(rawSpeed < speedThreshold){
                     rawSpeed = 0f;
+                    currentSpeed = 0f;
+                } else {
+                    // Apply smoothing
+                    currentSpeed = (float)(alpha * currentSpeed + (1 - alpha) * rawSpeed);
                 }
-
-                // Apply smoothing
-                currentSpeed = (float)(alpha * currentSpeed + (1 - alpha) * rawSpeed);
 
                 // Reset for next interval
                 vX = vY = vZ = 0f;
@@ -76,16 +89,27 @@ public class MotionTracker implements SensorEventListener {
     public void onAccuracyChanged(Sensor sensor, int i){}
 
     // TODO: Add methods to get player speed, position, etc.
+
+    /**
+     * Starts the motion tracker
+     */
     public void startTracking(){
         mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_GAME);
         Log.d(TAG, "MotionTracker started");
     }
 
+    /**
+     * Stops the motion tracker
+     */
     public void stopTracking(){
         mSensorManager.unregisterListener(this);
         Log.d(TAG, "MotionTracker stopped");
     }
 
+    /**
+     * Gets the current speed of the player
+     * @return The current speed in meters/second
+     */
     public double getCurrentSpeed(){
         Log.d(TAG, "Current speed: " + currentSpeed);
         return currentSpeed;
