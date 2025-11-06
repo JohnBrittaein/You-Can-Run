@@ -45,7 +45,7 @@ dependencies {
     // Include project modules
     implementation(project(":core"))
     implementation(project(":ar"))
-    implementation(project(":sensors"))
     implementation(project(":audio"))
     implementation(project(":ui"))
+    implementation(project(":sensors"))
 }
