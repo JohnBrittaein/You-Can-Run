@@ -11,14 +11,14 @@ import androidx.core.view.WindowInsetsCompat;
 import com.youcanrun.ar.ARSessionManager;
 import com.youcanrun.audio.AudioManager;
 import com.youcanrun.core.CoreLogicManager;
-import com.youcanrun.sensors.MotionTracker;
+import com.youcanrun.core.GameEventListener;
 import com.youcanrun.ui.UIManager;
 import com.youcanrun.ui.R;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements GameEventListener {
     private static final String TAG = "MainActivity";
+
     private CoreLogicManager coreLogicManager;
-    private MotionTracker motionTracker;
     private UIManager uiManager;
     private AudioManager audioManager;
     private ARSessionManager arManager;
@@ -27,17 +27,22 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
 
-        coreLogicManager = new CoreLogicManager();
-        motionTracker = new MotionTracker(this);
+        coreLogicManager = new CoreLogicManager(this);
+        coreLogicManager.setGameEventListener(this);
+
         uiManager = new UIManager(this);
         audioManager = new AudioManager(this);
         arManager = new ARSessionManager(this);
+
+        // Toggle Dev HUD
+        uiManager.setDevHudVisible(true);
 
         Log.d(TAG, "All modules initialized");
     }
@@ -45,14 +50,20 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        motionTracker.startTracking(); // Testing only, init inside coreLogicManager
+        coreLogicManager.resumeGame();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        motionTracker.stopTracking(); // Testing only, init inside coreLogicManager
+        coreLogicManager.pauseGame();
     }
+
+    @Override
+    public void onSpeedChanged(float speed) {
+        uiManager.updateDevHud(speed);
+    }
+
 
 
 }

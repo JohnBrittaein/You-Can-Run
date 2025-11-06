@@ -18,7 +18,7 @@ public class MotionTracker implements SensorEventListener {
     private static final String TAG = "MotionTracker";
     private Context context;
 
-    // TODO: Implement accelerometer and GPS tracking
+    // TODO: Tune Accelerometer and include GPS for hybrid motion tracking
     private SensorManager mSensorManager;
     private Sensor mAccelerometer;
     private float currentSpeed;
@@ -80,9 +80,11 @@ public class MotionTracker implements SensorEventListener {
         }
         lastTimeStamp = event.timestamp;
 
+        // Notify listener
+        notifySpeed(currentSpeed);
 
-        Log.d(TAG,"Accelerometer - TimeStamp: " + event.timestamp
-                + " vX:" + vX + " vY:" + vY + " vZ:" + vZ + " Speed: " + currentSpeed);
+       // Log.d(TAG,"Accelerometer - TimeStamp: " + event.timestamp
+       //         + " vX:" + vX + " vY:" + vY + " vZ:" + vZ + " Speed: " + currentSpeed);
     }
 
     @Override
@@ -113,6 +115,25 @@ public class MotionTracker implements SensorEventListener {
     public double getCurrentSpeed(){
         Log.d(TAG, "Current speed: " + currentSpeed);
         return currentSpeed;
+    }
+
+    // Create SpeedListener
+    private SpeedListener speedListener;
+
+    /**
+     * Sets the speed listener
+     * @param listener The listener to set
+     */
+    public void setSpeedListener(SpeedListener listener) {
+        this.speedListener = listener;
+    }
+
+    /**
+     * Notifies the speed listener of a new speed
+     * @param speed
+     */
+    private void notifySpeed(float speed) {
+        if (speedListener != null) speedListener.onSpeedUpdated(speed);
     }
 
 }
