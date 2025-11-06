@@ -45,13 +45,13 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        motionTracker.startTracking();
+        motionTracker.startTracking(); // Testing only, init inside coreLogicManager
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        motionTracker.stopTracking();
+        motionTracker.stopTracking(); // Testing only, init inside coreLogicManager
     }
 
 
