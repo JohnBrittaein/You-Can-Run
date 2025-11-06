@@ -42,4 +42,17 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, "All modules initialized");
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        motionTracker.startTracking();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        motionTracker.stopTracking();
+    }
+
+
 }

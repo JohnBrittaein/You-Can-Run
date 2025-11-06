@@ -26,31 +26,46 @@ public class MotionTracker implements SensorEventListener {
         Log.d(TAG, "MotionTracker initialized");
     }
 
+    private float vX, vY, vZ;
+    private long lastTimeStamp = -1;
+
     @Override
     public void onSensorChanged(SensorEvent event){
         // Because the sensor type is declared as TYPE_LINEAR_ACCELERATION, there is no
         // need to account for gravity to get speed.
 
-        double x = event.values[0];
-        double y = event.values[1];
-        double z = event.values[2];
+        if (lastTimeStamp != -1) {
+            float dt = (event.timestamp - lastTimeStamp)  * 1.0e-9f; // ns -> seconds
+            vX = event.values[0] * dt;
+            vY = event.values[1] * dt;
+            vZ = event.values[2] * dt;
+        }
+        lastTimeStamp = event.timestamp;
 
         // Calculate currentSpeed(magnitude) of acceleration
-        currentSpeed = (float) Math.sqrt(x*x + y*y + z*z);
+        currentSpeed = (float) Math.sqrt(vX * vX + vY*vY + vZ*vZ);
+
+        Log.d(TAG,"Accelerometer - TimeStamp: " + event.timestamp
+                + " vX:" + vX + " vY:" + vY + " vZ:" + vZ + " Speed: " + currentSpeed);
     }
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int i){}
 
     // TODO: Add methods to get player speed, position, etc.
-    private void StartTracking(){
+    public void startTracking(){
         mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_GAME);
+        Log.d(TAG, "MotionTracker started");
     }
 
-    private void StopTracking(){
+    public void stopTracking(){
         mSensorManager.unregisterListener(this);
+        Log.d(TAG, "MotionTracker stopped");
     }
 
-    public double getCurrentSpeed(){return currentSpeed;}
+    public double getCurrentSpeed(){
+        Log.d(TAG, "Current speed: " + currentSpeed);
+        return currentSpeed;
+    }
 
 }
