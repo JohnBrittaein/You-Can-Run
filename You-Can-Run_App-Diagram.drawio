@@ -105,7 +105,7 @@
         <mxCell id="8nHcXKAZ5uG0m_UUr_Kl-50" value="&lt;div&gt;&#39;GameEventListener&#39;&lt;/div&gt;" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" vertex="1" parent="1">
           <mxGeometry x="75" y="930" width="160" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="8nHcXKAZ5uG0m_UUr_Kl-51" value="&lt;div&gt;Monster&#39;s Position&lt;/div&gt;&lt;div&gt;Score&lt;/div&gt;&lt;div&gt;Losing etc.&lt;/div&gt;" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" vertex="1" parent="1">
+        <mxCell id="8nHcXKAZ5uG0m_UUr_Kl-51" value="&lt;div&gt;com.youcanrun.core.Monster&#39;s Position&lt;/div&gt;&lt;div&gt;Score&lt;/div&gt;&lt;div&gt;Losing etc.&lt;/div&gt;" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" vertex="1" parent="1">
           <mxGeometry x="75" y="960" width="160" height="30" as="geometry" />
         </mxCell>
       </root>

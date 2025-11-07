@@ -37,4 +37,5 @@ dependencies {
     androidTestImplementation(libs.espresso.core)
 
     implementation(project(":sensors"))
+    implementation(project(":utils"))
 }

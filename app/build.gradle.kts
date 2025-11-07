@@ -48,4 +48,5 @@ dependencies {
     implementation(project(":audio"))
     implementation(project(":ui"))
     implementation(project(":sensors"))
+    implementation(project(":utils"))
 }

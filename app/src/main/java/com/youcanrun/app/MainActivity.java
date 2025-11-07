@@ -14,6 +14,7 @@ import com.youcanrun.core.CoreLogicManager;
 import com.youcanrun.core.GameEventListener;
 import com.youcanrun.ui.UIManager;
 import com.youcanrun.ui.R;
+import com.youcanrun.utils.Vector3;
 
 public class MainActivity extends AppCompatActivity implements GameEventListener {
     private static final String TAG = "MainActivity";
@@ -61,9 +62,11 @@ public class MainActivity extends AppCompatActivity implements GameEventListener
 
     @Override
     public void onSpeedChanged(float speed) {
-        uiManager.updateDevHud(speed);
+        uiManager.updateDevHudSpeed(speed);
     }
 
+    @Override
+    public void onPlayerDeltaChanged(Vector3 delta) { uiManager.updateDevHudDelta(delta);}
 
 
 }

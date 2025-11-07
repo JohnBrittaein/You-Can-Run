@@ -4,12 +4,13 @@ import android.content.Context;
 import android.util.Log;
 
 import com.youcanrun.sensors.MotionTracker;
-import com.youcanrun.sensors.SpeedListener;
+import com.youcanrun.sensors.MotionListener;
+import com.youcanrun.utils.Vector3;
 
 /**
  *
  */
-public class CoreLogicManager implements SpeedListener {
+public class CoreLogicManager implements MotionListener {
     private static final String TAG = "CoreLogicManager";
 
     // TODO: Implement GameEventListener
@@ -24,7 +25,7 @@ public class CoreLogicManager implements SpeedListener {
     public CoreLogicManager(Context context) {
         // Initialize motion tracker and related listeners
         motionTracker = new MotionTracker(context);
-        motionTracker.setSpeedListener(this);
+        motionTracker.setMotionListener(this);
         Log.d(TAG,"CoreLogicManager initialized");
     }
 
@@ -39,6 +40,16 @@ public class CoreLogicManager implements SpeedListener {
         // This notifies the MainActivity that the speed has changed
         if (mGameEventListener != null){
             mGameEventListener.onSpeedChanged(speed);
+        }
+    }
+
+    @Override
+    public void onPlayerDeltaUpdated(Vector3 delta) {
+        Log.d(TAG, "Player Delta updated: " + delta.x + " " + delta.y + " " + delta.z);
+
+        // This notifies the MainActivity that player delta (orientation and speed) has changed
+        if (mGameEventListener != null){
+            mGameEventListener.onPlayerDeltaChanged(delta);
         }
     }
 
