@@ -7,12 +7,13 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.util.Log;
 
+import com.youcanrun.utils.Vector3;
+
 /**
  * Uses the onboard sensors to track the player's motion
  *
  * @author John Brittain
- * @version 0.1
- * @since 2025-11-05
+ * @date 2025-11-05
  */
 public class MotionTracker implements SensorEventListener {
     private static final String TAG = "MotionTracker";
@@ -21,6 +22,8 @@ public class MotionTracker implements SensorEventListener {
     // TODO: Tune Accelerometer and include GPS for hybrid motion tracking
     private SensorManager mSensorManager;
     private Sensor mAccelerometer;
+    private Sensor mRotationVector;
+    private float[] rotMatrix = new float[9];
     private float currentSpeed;
 
     /**
@@ -33,6 +36,7 @@ public class MotionTracker implements SensorEventListener {
         this.context = context;
         mSensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
         mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
+        mRotationVector = mSensorManager.getDefaultSensor(Sensor.TYPE_GAME_ROTATION_VECTOR);
         Log.d(TAG, "MotionTracker initialized");
     }
 
@@ -52,6 +56,15 @@ public class MotionTracker implements SensorEventListener {
 
         // This calculates speed by integrating acceleration over a set interval of time
         if(lastTimeStamp != -1){
+            // Use the RotationVector sensor to update the rotation matrix
+            if (event.sensor.getType() == Sensor.TYPE_GAME_ROTATION_VECTOR) {
+                SensorManager.getRotationMatrixFromVector(rotMatrix, event.values);
+            }
+
+            if (event.sensor.getType() != Sensor.TYPE_LINEAR_ACCELERATION) {
+                return;
+            }
+
             float dt = (event.timestamp - lastTimeStamp) * 1.0e-9f; // ns -> s
             intervalTimeAccum += dt;
 
@@ -62,6 +75,7 @@ public class MotionTracker implements SensorEventListener {
 
             // Check interval
             if(intervalTimeAccum >= intervalSeconds){
+                // Computing absolute speed
                 double rawSpeed = Math.sqrt(vX*vX + vY*vY + vZ*vZ);
 
                 // Reset if small
@@ -73,6 +87,21 @@ public class MotionTracker implements SensorEventListener {
                     currentSpeed = (float)(alpha * currentSpeed + (1 - alpha) * rawSpeed);
                 }
 
+                // Compute world-space velocity using the rotation matrix
+                float wX = rotMatrix[0] * vX + rotMatrix[1] * vY + rotMatrix[2] * vZ;
+                float wY = rotMatrix[3] * vX + rotMatrix[4] * vY + rotMatrix[5] * vZ;
+                float wZ = rotMatrix[6] * vX + rotMatrix[7] * vY + rotMatrix[8] * vZ;
+
+                // Scale by interval to get displacement in meters
+                Vector3 playerDelta = new Vector3(wX, wY, wZ).scale(intervalTimeAccum);
+
+                // Log.d(TAG,"Accelerometer - TimeStamp: " + event.timestamp
+                //         + " vX:" + vX + " vY:" + vY + " vZ:" + vZ + " Speed: " + currentSpeed);
+
+                //Log.d(TAG, "Rotation Vector - wX: " + wX + "wY: " + wY + "wZ: " + wZ);
+                //Log.d(TAG, "Rotation Vector - Player Delta: " + playerDelta.x + " " + playerDelta.y + " " + playerDelta.z);
+                notifyListener(currentSpeed, playerDelta);
+
                 // Reset for next interval
                 vX = vY = vZ = 0f;
                 intervalTimeAccum = 0f;
@@ -80,11 +109,6 @@ public class MotionTracker implements SensorEventListener {
         }
         lastTimeStamp = event.timestamp;
 
-        // Notify listener
-        notifySpeed(currentSpeed);
-
-       // Log.d(TAG,"Accelerometer - TimeStamp: " + event.timestamp
-       //         + " vX:" + vX + " vY:" + vY + " vZ:" + vZ + " Speed: " + currentSpeed);
     }
 
     @Override
@@ -97,6 +121,7 @@ public class MotionTracker implements SensorEventListener {
      */
     public void startTracking(){
         mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_GAME);
+        mSensorManager.registerListener(this, mRotationVector, SensorManager.SENSOR_DELAY_GAME);
         Log.d(TAG, "MotionTracker started");
     }
 
@@ -118,22 +143,25 @@ public class MotionTracker implements SensorEventListener {
     }
 
     // Create SpeedListener
-    private SpeedListener speedListener;
+    private MotionListener motionListener;
 
     /**
      * Sets the speed listener
      * @param listener The listener to set
      */
-    public void setSpeedListener(SpeedListener listener) {
-        this.speedListener = listener;
+    public void setMotionListener(MotionListener listener) {
+        this.motionListener = listener;
     }
 
     /**
      * Notifies the speed listener of a new speed
      * @param speed
      */
-    private void notifySpeed(float speed) {
-        if (speedListener != null) speedListener.onSpeedUpdated(speed);
+    private void notifyListener(float speed, Vector3 playerDelta) {
+        if (motionListener != null) {
+            motionListener.onSpeedUpdated(speed);
+            motionListener.onPlayerDeltaUpdated(playerDelta);
+        }
     }
 
 }

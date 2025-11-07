@@ -3,7 +3,7 @@ plugins {
 }
 
 android {
-    namespace = "com.youcanrun.sensors"
+    namespace = "com.youcanrun.utils"
     compileSdk {
         version = release(36)
     }
@@ -36,6 +36,4 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
-
-    implementation(project(":utils"))
 }
