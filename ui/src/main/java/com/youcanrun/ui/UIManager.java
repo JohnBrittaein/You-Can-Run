@@ -33,7 +33,9 @@ public class UIManager {
     /** ------------------ DEV HUD FUNCTIONS HERE ------------------**/
     private View devHud;
     private TextView devSpeedTextView;
-    private TextView devDeltaTextView;
+    private TextView devDirectionTextView;
+    private DevMapView devMapView;
+    private TextView devDistanceTextView;
 
     private void initDevHud(){
         if (!(context instanceof Activity)) return;
@@ -47,33 +49,59 @@ public class UIManager {
 
         // Get references to TextViews
         devSpeedTextView = devHud.findViewById(R.id.devSpeedTextView);
-        devDeltaTextView = devHud.findViewById(R.id.devDeltaTextView);
+        devDirectionTextView = devHud.findViewById(R.id.devDirectionTextView);
+        devMapView = devHud.findViewById(R.id.devMapView);
+        devDistanceTextView = devHud.findViewById(R.id.devMonsterDistanceTextView);
         Log.d(TAG,"Dev Hud Initialized");
     }
 
     public void updateDevHudSpeed(float speed) {
         // Update speed
         if (devSpeedTextView != null) {
-            devSpeedTextView.setText(String.format("Speed: %.2f m/s", speed));
+            ((Activity) context).runOnUiThread(() -> {
+                devSpeedTextView.setText(String.format("Speed: %.2f m/s", speed));
+            });
         }
     }
 
-    public void updateDevHudDelta(Vector3 delta){
+    public void updateDevHudDirection(Vector3 delta){
         // Update delta
         if(delta == null) return;
 
-        if(devDeltaTextView != null){
-            String deltaText = String.format(
-                    "Delta: X: %.3f, Y: %.3f, Z: %.3f",
-                    delta.x, delta.y, delta.z
-            );
-            devDeltaTextView.setText(deltaText);
+        if(devDirectionTextView != null){
+            ((Activity) context).runOnUiThread(() -> {
+                String deltaText = String.format(
+                        "Delta: X: %.3f, Y: %.3f, Z: %.3f",
+                        delta.x, delta.y, delta.z
+                );
+                devDirectionTextView.setText(deltaText);
+            });
         }
     }
 
-    public void setDevHudVisible(boolean visible) {
+    public void updateDevHudMapView(final Vector3 mPos, final Vector3 pDir){
+        if (devMapView != null && mPos != null) {
+            ((Activity) context).runOnUiThread(() -> {
+                devMapView.setMonsterPosition(mPos);
+                devMapView.setPlayerDirection(pDir);
+            });
+        }
+    }
+
+
+    public void updateDevHudDistance(final float distance){
+        if(devDistanceTextView != null){
+            ((Activity) context).runOnUiThread(() -> {
+                devDistanceTextView.setText(String.format("Distance: %.2f m", distance));
+            });
+        }
+    }
+
+    public void setDevHudVisible(final boolean visible) {
         if (devHud != null) {
-            devHud.setVisibility(visible ? View.VISIBLE : View.GONE);
+            ((Activity) context).runOnUiThread(() -> {
+                devHud.setVisibility(visible ? View.VISIBLE : View.GONE);
+            });
         }
     }
 

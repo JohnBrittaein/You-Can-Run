@@ -66,7 +66,11 @@ public class MainActivity extends AppCompatActivity implements GameEventListener
     }
 
     @Override
-    public void onPlayerDeltaChanged(Vector3 delta) { uiManager.updateDevHudDelta(delta);}
+    public void onPlayerDirectionChanged(Vector3 direction) { uiManager.updateDevHudDirection(direction);}
 
-
+    @Override
+    public void onMapPositionsChanged(Vector3 monsterPos, Vector3 playerOri, float monsterDistanceToPlayer){
+        uiManager.updateDevHudMapView(monsterPos, playerOri);
+        uiManager.updateDevHudDistance(monsterDistanceToPlayer);
+    }
 }
