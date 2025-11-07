@@ -4,12 +4,20 @@ import android.util.Log;
 
 import com.youcanrun.utils.Vector3;
 
+/**
+ * Monster class, which determines the position,speed and in general
+ * behavior of the monster chasing the player.
+ *
+ * @date 11-07-2025
+ * @author John Brittain
+ */
 public class Monster {
     private static final String TAG = "Monster";
     private Vector3 position;
     private Vector3 velocity;
     private float baseSpeed;
     private float momentum;
+    private float enragement;
 
     private float distanceToPlayer;
     //TODO: consider implementing dynamic momentum instead of fixed
@@ -25,6 +33,7 @@ public class Monster {
         );
         this.baseSpeed = 1.0f;
         this.momentum = 1.0f; // higher has snappier movement
+        this.enragement = 1.0f;
         Log.d(TAG,"Monster created");
     }
 
@@ -42,9 +51,9 @@ public class Monster {
 
         // Monster velocity toward origin(player)
         Vector3 monsterVel = new Vector3(
-                toOrigin.x * baseSpeed,
-                toOrigin.y * baseSpeed,
-                toOrigin.z * baseSpeed
+                toOrigin.x * baseSpeed * enragement,
+                toOrigin.y * baseSpeed * enragement,
+                toOrigin.z * baseSpeed * enragement
         );
 
         // Player velocity
@@ -74,6 +83,10 @@ public class Monster {
 
     public Vector3 getPosition(){return position;}
     public Vector3 getVelocity(){return velocity;}
+
+    public float getEnragement(){return enragement;}
+
+    public void setEnragement(float enragement){this.enragement = enragement;}
 
     public float getDistanceToPlayer(){return distanceToPlayer;}
     public void setPosition(Vector3 nPosition){this.position = nPosition;}

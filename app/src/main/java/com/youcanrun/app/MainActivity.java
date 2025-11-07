@@ -4,18 +4,23 @@ import android.os.Bundle;
 import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 import com.youcanrun.ar.ARSessionManager;
 import com.youcanrun.audio.AudioManager;
 import com.youcanrun.core.CoreLogicManager;
 import com.youcanrun.core.GameEventListener;
 import com.youcanrun.ui.UIManager;
-import com.youcanrun.ui.R;
 import com.youcanrun.utils.Vector3;
 
+/**
+ * The MainActivity serves as the orchestrator between all of the other modules
+ * :core, :sensors, :ui, :audio, :ar
+ * The role of the MainActivity is to initialize modules, implement listeners, pass data,
+ * and handle app lifecycles. Other than this, the MainActivity has NO other
+ * functional use.
+ *
+ * @date 11-07-2025
+ */
 public class MainActivity extends AppCompatActivity implements GameEventListener {
     private static final String TAG = "MainActivity";
 
@@ -27,13 +32,6 @@ public class MainActivity extends AppCompatActivity implements GameEventListener
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
 
         coreLogicManager = new CoreLogicManager(this);
         coreLogicManager.setGameEventListener(this);
@@ -41,9 +39,6 @@ public class MainActivity extends AppCompatActivity implements GameEventListener
         uiManager = new UIManager(this);
         audioManager = new AudioManager(this);
         arManager = new ARSessionManager(this);
-
-        // Toggle Dev HUD
-        uiManager.setDevHudVisible(true);
 
         Log.d(TAG, "All modules initialized");
     }

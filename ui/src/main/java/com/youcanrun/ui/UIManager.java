@@ -6,13 +6,17 @@ import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.youcanrun.utils.Vector3;
 
 
 /**
+ * UIManager is responsible for all UI/Visual effects functionality
+ * within the app.
  *
+ * @date 11-07-2025
  */
 public class UIManager {
     private static final String TAG = "UIManager";
@@ -22,13 +26,39 @@ public class UIManager {
 
     public UIManager(Context context) {
         this.context = context;
+        setStartMenuVisible();
         initDevHud();
+        showDHudBtn = startMenuView.findViewById(R.id.show_dev_hud_button);
+        showDHudBtn.setOnClickListener(v -> {
+            if (devHud.getVisibility() != View.VISIBLE) {
+                setDevHudVisible(true);
+            } else {
+                setDevHudVisible(false);
+            }
+        });
         Log.d(TAG, "UIManager initialized");
     }
 
     // TODO: Add methods to handle HUD, effects, etc.
     public void initHud(){}
     public void updateHud(){}
+    private View startMenuView;
+    private Button showDHudBtn;
+    public void setStartMenuVisible() {
+        if (!(context instanceof Activity)) return;
+        Activity activity = (Activity) context;
+
+        //ViewGroup root = activity.findViewById(android.R.id.content);
+        //startMenuView = LayoutInflater.from(context).inflate(R.layout.start_menu, root, false);
+
+        startMenuView = LayoutInflater.from(context).inflate(R.layout.start_menu, null);
+        activity.setContentView(startMenuView);
+    }
+
+    public void hideStartMenu(Activity activity, int mainLayoutResId) {
+        activity.setContentView(mainLayoutResId);
+    }
+
 
     /** ------------------ DEV HUD FUNCTIONS HERE ------------------**/
     private View devHud;
@@ -104,6 +134,4 @@ public class UIManager {
             });
         }
     }
-
-
 }

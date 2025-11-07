@@ -8,7 +8,11 @@ import com.youcanrun.sensors.MotionListener;
 import com.youcanrun.utils.Vector3;
 
 /**
+ * CoreLogicManager interprets data passed to it from other modules
+ * and handles all game logic, but does not contain audio/visual or
+ * tactile components.
  *
+ * @date 11-07-2025
  */
 public class CoreLogicManager implements MotionListener {
     private static final String TAG = "CoreLogicManager";
@@ -22,10 +26,8 @@ public class CoreLogicManager implements MotionListener {
 
     // Game State Variables
     private GameMap gameMap;
-
     private Vector3 playerDirection;
     private float playerSpeed;
-
     private long lastUpdatedTime;
 
     public CoreLogicManager(Context context) {
@@ -89,6 +91,8 @@ public class CoreLogicManager implements MotionListener {
             }
         }
     }
+
+    // Game start/stop and lifecycle controls
     private volatile boolean running = false;
     private Thread gameThread;
     public void startGameLoop(){
@@ -131,5 +135,13 @@ public class CoreLogicManager implements MotionListener {
     public void resumeGame() {
         motionTracker.startTracking();
         startGameLoop();
+    }
+
+    /**
+     * player has either quit or has lost the game
+     */
+    public void endGame(){
+        // Show/saves scores
+        //end game logic
     }
 }
