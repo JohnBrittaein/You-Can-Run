@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.youcanrun.utils.Vector3;
@@ -24,23 +25,53 @@ public class UIManager {
 
     // TODO: Implement HUD, glitch effects, and other UI elements
 
+    private Button startBtn;
+    private ImageView quitBtn;
+    private boolean scanInit = false;
+
     public UIManager(Context context) {
         this.context = context;
         setStartMenuVisible();
-        initDevHud();
         showDHudBtn = startMenuView.findViewById(R.id.show_dev_hud_button);
         showDHudBtn.setOnClickListener(v -> {
-            if (devHud.getVisibility() != View.VISIBLE) {
-                setDevHudVisible(true);
-            } else {
-                setDevHudVisible(false);
+            if (scanInit) {
+                if (devHud.getVisibility() != View.VISIBLE) {
+                    setDevHudVisible(true);
+                } else {
+                    setDevHudVisible(false);
+                }
             }
+        });
+        startBtn = startMenuView.findViewById(R.id.start_button);
+        startBtn.setOnClickListener(v -> {
+            initHud();
+            initDevHud();
+            scanInit = true;
+            startBtn.setVisibility(View.GONE);
+            // Send message to Main to start the game
+        });
+        quitBtn = hud.findViewById(R.id.quit_button);
+        startBtn.setOnClickListener(v -> {
+            // TODO: implement method when the game ends, or quits
+            // Send message to Quit the game
         });
         Log.d(TAG, "UIManager initialized");
     }
 
     // TODO: Add methods to handle HUD, effects, etc.
-    public void initHud(){}
+    private View hud;
+    private void initHud(){
+        if (!(context instanceof Activity)) return;
+        Activity activity = (Activity) context;
+
+        ViewGroup root = activity.findViewById(android.R.id.content);
+        hud = LayoutInflater.from(context).inflate(R.layout.hud, root, false);
+
+        // Add it on top of existing layout
+        root.addView(hud);
+
+        Log.d(TAG,"Hud Initialized");
+    }
     public void updateHud(){}
     private View startMenuView;
     private Button showDHudBtn;
@@ -58,7 +89,6 @@ public class UIManager {
     public void hideStartMenu(Activity activity, int mainLayoutResId) {
         activity.setContentView(mainLayoutResId);
     }
-
 
     /** ------------------ DEV HUD FUNCTIONS HERE ------------------**/
     private View devHud;
