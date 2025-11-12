@@ -7,7 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.youcanrun.utils.Vector3;
@@ -26,7 +26,7 @@ public class UIManager {
     // TODO: Implement HUD, glitch effects, and other UI elements
 
     private Button startBtn;
-    private ImageView quitBtn;
+    private ImageButton quitBtn;
     private boolean scanInit = false;
 
     public UIManager(Context context) {
@@ -50,11 +50,6 @@ public class UIManager {
             startBtn.setVisibility(View.GONE);
             // Send message to Main to start the game
         });
-        quitBtn = hud.findViewById(R.id.quit_button);
-        startBtn.setOnClickListener(v -> {
-            // TODO: implement method when the game ends, or quits
-            // Send message to Quit the game
-        });
         Log.d(TAG, "UIManager initialized");
     }
 
@@ -69,6 +64,12 @@ public class UIManager {
 
         // Add it on top of existing layout
         root.addView(hud);
+
+        quitBtn = hud.findViewById(R.id.quit_button);
+        startBtn.setOnClickListener(v -> {
+            // TODO: implement method when the game ends, or quits
+            // Send message to Quit the game
+        });
 
         Log.d(TAG,"Hud Initialized");
     }

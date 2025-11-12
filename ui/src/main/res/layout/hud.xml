@@ -88,7 +88,7 @@
         app:layout_constraintBottom_toTopOf="@id/camera_button"
         android:layout_margin="8dp" />
 
-    <ImageView
+    <ImageButton
         android:id="@+id/camera_button"
         android:src="@drawable/button_base"
         android:layout_width="75dp"
@@ -98,7 +98,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <ImageView
+    <ImageButton
         android:id="@+id/quit_button"
         android:layout_width="75dp"
         android:layout_height="50dp"
