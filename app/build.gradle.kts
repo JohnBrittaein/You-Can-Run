@@ -38,9 +38,12 @@ dependencies {
     implementation(libs.material)
     implementation(libs.activity)
     implementation(libs.constraintlayout)
+    implementation(libs.core)
+    implementation(libs.sceneform.ux)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
+    implementation("com.google.ar:core:1.14.0")
 
     // Include project modules
     implementation(project(":core"))
