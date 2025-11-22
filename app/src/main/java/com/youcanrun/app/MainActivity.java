@@ -54,6 +54,7 @@ public class MainActivity extends AppCompatActivity implements GameEventListener
             arManager = new ARSessionManager(this);
             ArFragment arcam = (ArFragment) getSupportFragmentManager().findFragmentById(com.youcanrun.ui.R.id.arCameraArea);
             Anchor anchor = arcam.;
+
         }
         Log.d(TAG, "All modules initialized");
     }

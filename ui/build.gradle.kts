@@ -36,6 +36,7 @@ dependencies {
     implementation(libs.core)
     implementation("com.google.ar.sceneform:core")
     implementation("com.google.ar.sceneform.ux.ArFragment:ux")
+    implementation("com.google.ar:core:1.14.0")
     implementation(libs.sceneform.ux)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)

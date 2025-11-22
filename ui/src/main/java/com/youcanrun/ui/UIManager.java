@@ -10,7 +10,11 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.google.ar.core.Anchor;
+import com.google.ar.sceneform.ux.ArFragment;
 import com.youcanrun.utils.Vector3;
+import com.google.ar.sceneform.ux.ArFragment;
+
 
 
 /**
@@ -138,6 +142,10 @@ public class UIManager {
                 devDirectionTextView.setText(deltaText);
             });
         }
+    }
+
+    public void InitArFragment(){
+ArFragment arcam = (ArFragment) getSupportFragmentManager().findFragmentById(R.id.layout);
     }
 
     public void updateDevHudMapView(final Vector3 mPos, final Vector3 pDir){
