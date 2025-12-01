@@ -10,26 +10,23 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.ar.core.Anchor;
-import com.google.ar.sceneform.AnchorNode;
-import com.youcanrun.ar.ARSessionManager;
 import com.youcanrun.audio.AudioManager;
 import com.youcanrun.core.CoreLogicManager;
 import com.youcanrun.core.GameEventListener;
 import com.youcanrun.ui.UIManager;
 import com.youcanrun.utils.Vector3;
 
-import com.google.ar.sceneform.ArSceneView;
-import com.google.ar.sceneform.ux.ArFragment;
-
 import java.util.Objects;
 
 /**
  * The MainActivity serves as the orchestrator between all of the other modules
- * :core, :sensors, :ui, :audio, :ar
+ * :core, :sensors, :ui, :audio
  * The role of the MainActivity is to initialize modules, implement listeners, pass data,
  * and handle app lifecycles. Other than this, the MainActivity has NO other
  * functional use.
+ *
+ * MainActivity displays the main HUD with sensors (compass, speedometer, etc.)
+ * AR viewing is optional and triggered via the camera button, which launches ARActivity.
  *
  * @date 11-07-2025
  */
@@ -39,53 +36,72 @@ public class MainActivity extends AppCompatActivity implements GameEventListener
     private CoreLogicManager coreLogicManager;
     private UIManager uiManager;
     private AudioManager audioManager;
-    private ARSessionManager arManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // Check if device supports AR (needed for optional camera button)
+        if (!checkSystemSupport(this)) {
+            return;
+        }
+
+        // Initialize UI first (handles all UI including camera button)
+        uiManager = new UIManager(this);
+
+        // Initialize core game modules
         coreLogicManager = new CoreLogicManager(this);
         coreLogicManager.setGameEventListener(this);
 
-        uiManager = new UIManager(this);
         audioManager = new AudioManager(this);
-        if(checkSystemSupport(this)) {
-            arManager = new ARSessionManager(this);
-            ArFragment arcam = (ArFragment) getSupportFragmentManager().findFragmentById(com.youcanrun.ui.R.id.arCameraArea);
-            Anchor anchor = arcam.;
 
-        }
-        Log.d(TAG, "All modules initialized");
+        Log.d(TAG, "All modules initialized (AR is optional via camera button)");
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        coreLogicManager.resumeGame();
+        if (coreLogicManager != null) {
+            coreLogicManager.resumeGame();
+        }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        coreLogicManager.pauseGame();
+        // Don't pause the game - it needs to keep running when AR view is open
+        // to continue tracking movement and updating monster position
+        // if (coreLogicManager != null) {
+        //     coreLogicManager.pauseGame();
+        // }
     }
 
     @Override
     public void onSpeedChanged(float speed) {
-        uiManager.updateDevHudSpeed(speed);
+        if (uiManager != null) {
+            uiManager.updateDevHudSpeed(speed);
+        }
     }
 
     @Override
-    public void onPlayerDirectionChanged(Vector3 direction) { uiManager.updateDevHudDirection(direction);}
-
-    @Override
-    public void onMapPositionsChanged(Vector3 monsterPos, Vector3 playerOri, float monsterDistanceToPlayer){
-        uiManager.updateDevHudMapView(monsterPos, playerOri);
-        uiManager.updateDevHudDistance(monsterDistanceToPlayer);
+    public void onPlayerDirectionChanged(Vector3 direction) {
+        if (uiManager != null) {
+            uiManager.updateDevHudDirection(direction);
+        }
     }
 
-    public static boolean checkSystemSupport(Activity activity) {
+    @Override
+    public void onMapPositionsChanged(Vector3 monsterPos, Vector3 playerOri, float monsterDistanceToPlayer) {
+        if (uiManager != null) {
+            uiManager.updateDevHudMapView(monsterPos, playerOri);
+            uiManager.updateDevHudDistance(monsterDistanceToPlayer);
+        }
+
+        // Update AR view if it's active (pass both monster position and player orientation)
+        com.youcanrun.ar.ARActivity.updateMonster(monsterPos, playerOri);
+    }
+
+    public boolean checkSystemSupport(Activity activity) {
 
         // checking whether the API version of the running Android >= 24
         // that means Android Nougat 7.0
@@ -108,3 +124,4 @@ public class MainActivity extends AppCompatActivity implements GameEventListener
         }
     }
 }
+

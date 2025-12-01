@@ -10,16 +10,13 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-import com.google.ar.core.Anchor;
-import com.google.ar.sceneform.ux.ArFragment;
 import com.youcanrun.utils.Vector3;
-import com.google.ar.sceneform.ux.ArFragment;
-
 
 
 /**
  * UIManager is responsible for all UI/Visual effects functionality
- * within the app.
+ * within the app. It manages the HUD, sensor displays (compass, speedometer, etc.),
+ * and handles user interactions like the camera button.
  *
  * @date 11-07-2025
  */
@@ -27,11 +24,14 @@ public class UIManager {
     private static final String TAG = "UIManager";
     private Context context;
 
-    // TODO: Implement HUD, glitch effects, and other UI elements
-
     private Button startBtn;
     private ImageButton quitBtn;
+    private ImageButton cameraBtn;
     private boolean scanInit = false;
+    private OnCameraButtonClickListener cameraButtonListener;
+    public interface OnCameraButtonClickListener {
+        void onCameraButtonClicked();
+    }
 
     public UIManager(Context context) {
         this.context = context;
@@ -52,9 +52,27 @@ public class UIManager {
             initDevHud();
             scanInit = true;
             startBtn.setVisibility(View.GONE);
-            // Send message to Main to start the game
         });
         Log.d(TAG, "UIManager initialized");
+    }
+
+    /**
+     * Set the camera button click listener
+     * This allows MainActivity to handle AR activity launch
+     */
+    public void setOnCameraButtonClickListener(OnCameraButtonClickListener listener) {
+        this.cameraButtonListener = listener;
+    }
+
+    /**
+     * Launch AR Activity directly from UIManager when camera button is clicked
+     */
+    public void launchARActivity() {
+        if (!(context instanceof Activity)) return;
+        Activity activity = (Activity) context;
+        
+        android.content.Intent intent = new android.content.Intent(context, com.youcanrun.ar.ARActivity.class);
+        activity.startActivity(intent);
     }
 
     // TODO: Add methods to handle HUD, effects, etc.
@@ -69,8 +87,14 @@ public class UIManager {
         // Add it on top of existing layout
         root.addView(hud);
 
+        cameraBtn = hud.findViewById(R.id.camera_button);
+        cameraBtn.setOnClickListener(v -> {
+            // Launch AR Activity directly from UIManager
+            launchARActivity();
+        });
+
         quitBtn = hud.findViewById(R.id.quit_button);
-        startBtn.setOnClickListener(v -> {
+        quitBtn.setOnClickListener(v -> {
             // TODO: implement method when the game ends, or quits
             // Send message to Quit the game
         });
@@ -142,10 +166,6 @@ public class UIManager {
                 devDirectionTextView.setText(deltaText);
             });
         }
-    }
-
-    public void InitArFragment(){
-ArFragment arcam = (ArFragment) getSupportFragmentManager().findFragmentById(R.id.layout);
     }
 
     public void updateDevHudMapView(final Vector3 mPos, final Vector3 pDir){
