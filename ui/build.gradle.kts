@@ -38,4 +38,5 @@ dependencies {
     androidTestImplementation(libs.espresso.core)
 
     implementation(project(":utils"))
+    implementation(project(":ar"))
 }
