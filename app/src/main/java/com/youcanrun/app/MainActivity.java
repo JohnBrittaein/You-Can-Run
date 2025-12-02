@@ -84,6 +84,14 @@ public class MainActivity extends AppCompatActivity implements GameEventListener
     }
 
     @Override
+    public void onPlayerDistanceChanged(float distance) {
+        if (uiManager != null) {
+            uiManager.updateDevHudPlayerDistance(distance);
+
+        }
+    }
+
+    @Override
     public void onPlayerDirectionChanged(Vector3 direction) {
         if (uiManager != null) {
             uiManager.updateDevHudDirection(direction);
