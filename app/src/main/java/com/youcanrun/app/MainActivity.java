@@ -14,6 +14,7 @@ import com.youcanrun.ar.ARActivity;
 import com.youcanrun.audio.AudioManager;
 import com.youcanrun.core.CoreLogicManager;
 import com.youcanrun.core.GameEventListener;
+import com.youcanrun.sensors.HapticFeedbackManager;
 import com.youcanrun.ui.UIManager;
 import com.youcanrun.utils.Vector3;
 
@@ -37,6 +38,7 @@ public class MainActivity extends AppCompatActivity implements GameEventListener
     private CoreLogicManager coreLogicManager;
     private UIManager uiManager;
     private AudioManager audioManager;
+    private HapticFeedbackManager hapticFeedbackManager;
     private boolean gameStarted = false;
 
     @Override
@@ -58,6 +60,9 @@ public class MainActivity extends AppCompatActivity implements GameEventListener
         // Initialize audio manager and connect it to UI
         audioManager = new AudioManager(this);
         uiManager.setAudioManager(audioManager);
+
+        // Initialize haptic feedback manager
+        hapticFeedbackManager = new HapticFeedbackManager(this);
 
         // Set game start listener - game will start when start button is clicked
         uiManager.setOnGameStartListener(() -> startGame());
@@ -99,6 +104,9 @@ public class MainActivity extends AppCompatActivity implements GameEventListener
         super.onDestroy();
         if (audioManager != null) {
             audioManager.release();
+        }
+        if (hapticFeedbackManager != null) {
+            hapticFeedbackManager.release();
         }
     }
 
@@ -153,6 +161,11 @@ public class MainActivity extends AppCompatActivity implements GameEventListener
                 // Update audio level meter with current audio level
                 float audioLevel = audioManager.getCurrentAudioLevel();
                 uiManager.updateAudioLevelMeter(audioLevel);
+            }
+
+            // Update haptic feedback based on monster distance and signal strength
+            if (hapticFeedbackManager != null) {
+                hapticFeedbackManager.updateHaptics(monsterDistanceToPlayer, signalStrength);
             }
         }
 
