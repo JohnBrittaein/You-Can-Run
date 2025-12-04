@@ -27,6 +27,8 @@ public class MotionTracker implements SensorEventListener {
     private float[] rotMatrix = new float[9];
     private float currentSpeed;
 
+    private float currentDistance;
+
     /**
      * Initializes the motion tracker object
      * Contains a reference to the application context
@@ -46,6 +48,12 @@ public class MotionTracker implements SensorEventListener {
     private final float alpha = 0.8f; // Smoothing factor, lowering this will make the speed more responsive
     private final float intervalSeconds = 0.2f; // increasing this will improve consistency but decrease responsiveness
     private float intervalTimeAccum = 0f; // accumulates dt
+
+    private float distanceTolarence = 0.001f;
+
+    public float getCurrentDistance(){
+        return currentDistance;
+    }
 
     @Override
     public void onSensorChanged(SensorEvent event) {
@@ -68,9 +76,16 @@ public class MotionTracker implements SensorEventListener {
 
             intervalTimeAccum += dt;
 
-            if (intervalTimeAccum >= intervalSeconds) {
-                float rawSpeed = (float) Math.sqrt(vX*vX + vY*vY + vZ*vZ);
+            float rawSpeed = (float) Math.sqrt(vX*vX + vY*vY + vZ*vZ);
 
+            float rawDistanceAtMoment = (float) Math.sqrt((vX*dt)*(vX*dt)+(vY*dt)*(vY*dt)+(vZ*dt)*(vZ*dt));
+
+            if(rawDistanceAtMoment > distanceTolarence && motionListener != null) {
+                currentDistance = currentDistance + rawDistanceAtMoment;
+                // Notify listener
+                motionListener.onPlayerDistanceUpdated(currentDistance);
+            }
+            if (intervalTimeAccum >= intervalSeconds) {
                 // Smooth speed
                 currentSpeed = alpha * currentSpeed + (1 - alpha) * rawSpeed;
 

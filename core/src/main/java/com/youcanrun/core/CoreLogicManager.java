@@ -28,6 +28,8 @@ public class CoreLogicManager implements MotionListener {
     private GameMap gameMap;
     private Vector3 playerDirection;
     private float playerSpeed;
+
+    private float playerDistance;
     private long lastUpdatedTime;
 
     public CoreLogicManager(Context context) {
@@ -59,6 +61,16 @@ public class CoreLogicManager implements MotionListener {
         // This notifies the MainActivity that the speed has changed
         if (mGameEventListener != null){
             mGameEventListener.onSpeedChanged(speed);
+        }
+    }
+
+    @Override
+    public void onPlayerDistanceUpdated(float distance){
+        Log.d(TAG, "Distance Updated: " + distance);
+
+        // This notifies the MainActivity that the distance has changed
+        if (mGameEventListener != null){
+            mGameEventListener.onPlayerDistanceChanged(distance);
         }
     }
 

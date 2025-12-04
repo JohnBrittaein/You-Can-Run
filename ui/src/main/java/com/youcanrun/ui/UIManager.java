@@ -125,6 +125,7 @@ public class UIManager {
     private TextView devDirectionTextView;
     private DevMapView devMapView;
     private TextView devDistanceTextView;
+    private TextView devPlayerDistanceTextView;
 
     private void initDevHud(){
         if (!(context instanceof Activity)) return;
@@ -141,6 +142,7 @@ public class UIManager {
         devDirectionTextView = devHud.findViewById(R.id.devDirectionTextView);
         devMapView = devHud.findViewById(R.id.devMapView);
         devDistanceTextView = devHud.findViewById(R.id.devMonsterDistanceTextView);
+        devPlayerDistanceTextView = devHud.findViewById(R.id.devPlayerDistanceTextView);
         Log.d(TAG,"Dev Hud Initialized");
     }
 
@@ -152,6 +154,21 @@ public class UIManager {
             });
         }
     }
+
+    public void updateDevHudPlayerDistance(float distance){
+        Log.i("Distance", "updateDevHudPlayerDistance: " + distance);
+        if (devPlayerDistanceTextView != null) {
+            ((Activity) context).runOnUiThread(() -> {
+                if(distance < 1000f) {
+                    devPlayerDistanceTextView.setText(String.format("Player Distance: %.2f m", distance));
+                }
+                else{
+                    devPlayerDistanceTextView.setText(String.format("Player Distance: %.2f km", distance/1000));
+                }
+            });
+        }
+    }
+
 
     public void updateDevHudDirection(Vector3 delta){
         // Update delta
