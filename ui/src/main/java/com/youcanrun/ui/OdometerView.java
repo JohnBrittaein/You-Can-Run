@@ -6,6 +6,9 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.view.View;
+
+import androidx.annotation.NonNull;
+
 public class OdometerView extends View {
     private float distance = 0f;
     private Paint textPaint;
@@ -14,7 +17,7 @@ public class OdometerView extends View {
         super(context);
         init();
     }
-
+    
     public OdometerView(Context context, AttributeSet attrs) {
         super(context, attrs);
         textPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -27,6 +30,7 @@ public class OdometerView extends View {
         init();
     }
 
+    
     public void setDistance(float distance) {
         this.distance = distance;
         invalidate(); // redraw the view
@@ -35,9 +39,9 @@ public class OdometerView extends View {
     private void init() {
         setBackgroundColor(Color.GRAY);
     }
-
+    
     @Override
-    protected void onDraw(Canvas canvas) {
+    protected void onDraw(@NonNull Canvas canvas) {
         super.onDraw(canvas);
 
         String text = (distance < 1000f) ? String.format("%.2f m", distance)

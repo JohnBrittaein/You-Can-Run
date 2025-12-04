@@ -40,10 +40,6 @@ public class MainActivity extends AppCompatActivity implements GameEventListener
     private UIManager uiManager;
     private AudioManager audioManager;
 
-
-    private MotionTracker motionTracker;
-    private OdometerView odometerView;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -87,6 +83,7 @@ public class MainActivity extends AppCompatActivity implements GameEventListener
     public void onSpeedChanged(float speed) {
         if (uiManager != null) {
             uiManager.updateDevHudSpeed(speed);
+            uiManager.updateSpeedometer(speed);
         }
     }
 
@@ -102,8 +99,7 @@ public class MainActivity extends AppCompatActivity implements GameEventListener
     public void onPlayerDirectionChanged(Vector3 direction) {
         if (uiManager != null) {
             uiManager.updateDevHudDirection(direction);
-            // Update the compass direction
-//          uiManager.compassDirection(direction);
+            uiManager.updateCompass(direction);
         }
     }
 
@@ -112,6 +108,7 @@ public class MainActivity extends AppCompatActivity implements GameEventListener
         if (uiManager != null) {
             uiManager.updateDevHudMapView(monsterPos, playerOri);
             uiManager.updateDevHudDistance(monsterDistanceToPlayer);
+
         }
 
         // Update AR view if it's active (pass both monster position and player orientation)

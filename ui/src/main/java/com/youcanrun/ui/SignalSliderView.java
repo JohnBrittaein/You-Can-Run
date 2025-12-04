@@ -126,7 +126,7 @@ public class SignalSliderView extends View {
 
     private void init(Context context) {
         // Load your custom ripple drawable as background
-        backgroundDrawable = ContextCompat.getDrawable(context, R.drawable.button_slider);
+        backgroundDrawable = ContextCompat.getDrawable(context, R.drawable.slider);
         setClickable(true);
 
         // Paint for the green fill

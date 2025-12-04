@@ -24,6 +24,8 @@ public class UIManager {
     private static final String TAG = "UIManager";
     private Context context;
     public OdometerView odometerView;
+    public SpeedometerView speedometerView;
+    public CompassView compassView;
     private Button startBtn;
     private ImageButton quitBtn;
     private ImageButton cameraBtn;
@@ -90,6 +92,12 @@ public class UIManager {
 
         // Reference OdometerView
         odometerView = hud.findViewById(R.id.OdometerView);
+
+        // Reference SpeedometerView
+        speedometerView = hud.findViewById(R.id.SpeedometerView);
+
+        // Reference SpeedometerView
+        compassView = hud.findViewById(R.id.CompassView);
 
         cameraBtn = hud.findViewById(R.id.camera_button);
         cameraBtn.setOnClickListener(v -> {
@@ -182,7 +190,29 @@ public class UIManager {
         }
     }
 
+    public void updateSpeedometer(float speed){
+        Log.i("Speed", "updateSpeedometer: " + speed);
+        if (speedometerView != null) {
+            ((Activity) context).runOnUiThread(() -> {
+                speedometerView.setSpeed(speed);
+            });
+        }
+    }
 
+    public void updateCompass(Vector3 delta){
+        // Update delta
+        if(delta == null) return;
+
+        if(compassView != null){
+            ((Activity) context).runOnUiThread(() -> {
+                String deltaText = String.format(
+                        "Delta: X: %.3f, Y: %.3f, Z: %.3f",
+                        delta.x, delta.y, delta.z
+                );
+                compassView.setCompassDirection(delta);
+            });
+        }
+    }
 
     public void updateDevHudDirection(Vector3 delta){
         // Update delta
