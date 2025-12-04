@@ -23,12 +23,13 @@ import com.youcanrun.utils.Vector3;
 public class UIManager {
     private static final String TAG = "UIManager";
     private Context context;
-
+    public OdometerView odometerView;
     private Button startBtn;
     private ImageButton quitBtn;
     private ImageButton cameraBtn;
     private boolean scanInit = false;
     private OnCameraButtonClickListener cameraButtonListener;
+
     public interface OnCameraButtonClickListener {
         void onCameraButtonClicked();
     }
@@ -86,6 +87,9 @@ public class UIManager {
 
         // Add it on top of existing layout
         root.addView(hud);
+
+        // Reference OdometerView
+        odometerView = hud.findViewById(R.id.OdometerView);
 
         cameraBtn = hud.findViewById(R.id.camera_button);
         cameraBtn.setOnClickListener(v -> {
@@ -169,7 +173,6 @@ public class UIManager {
         }
     }
 
-
     public void updateDevHudDirection(Vector3 delta){
         // Update delta
         if(delta == null) return;
@@ -183,6 +186,7 @@ public class UIManager {
                 devDirectionTextView.setText(deltaText);
             });
         }
+
     }
 
     public void updateDevHudMapView(final Vector3 mPos, final Vector3 pDir){
@@ -194,12 +198,14 @@ public class UIManager {
         }
     }
 
-
     public void updateDevHudDistance(final float distance){
         if(devDistanceTextView != null){
             ((Activity) context).runOnUiThread(() -> {
                 devDistanceTextView.setText(String.format("Distance: %.2f m", distance));
             });
+        }
+        if(odometerView != null){
+            odometerView.setDistance(distance);
         }
     }
 

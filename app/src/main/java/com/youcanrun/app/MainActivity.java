@@ -10,13 +10,16 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.youcanrun.ar.ARActivity;
 import com.youcanrun.audio.AudioManager;
 import com.youcanrun.core.CoreLogicManager;
 import com.youcanrun.core.GameEventListener;
+import com.youcanrun.sensors.MotionTracker;
 import com.youcanrun.ui.UIManager;
 import com.youcanrun.utils.Vector3;
 
 import java.util.Objects;
+import com.youcanrun.ui.OdometerView;
 
 /**
  * The MainActivity serves as the orchestrator between all of the other modules
@@ -37,6 +40,10 @@ public class MainActivity extends AppCompatActivity implements GameEventListener
     private UIManager uiManager;
     private AudioManager audioManager;
 
+
+    private MotionTracker motionTracker;
+    private OdometerView odometerView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,6 +55,8 @@ public class MainActivity extends AppCompatActivity implements GameEventListener
 
         // Initialize UI first (handles all UI including camera button)
         uiManager = new UIManager(this);
+
+        odometerView = uiManager.odometerView; // directly access the public field
 
         // Initialize core game modules
         coreLogicManager = new CoreLogicManager(this);
@@ -87,7 +96,10 @@ public class MainActivity extends AppCompatActivity implements GameEventListener
     public void onPlayerDistanceChanged(float distance) {
         if (uiManager != null) {
             uiManager.updateDevHudPlayerDistance(distance);
-
+        }
+        // Update OdometerView if available
+        if (odometerView != null) {
+            odometerView.setDistance(distance);
         }
     }
 
@@ -95,6 +107,8 @@ public class MainActivity extends AppCompatActivity implements GameEventListener
     public void onPlayerDirectionChanged(Vector3 direction) {
         if (uiManager != null) {
             uiManager.updateDevHudDirection(direction);
+            // Update the compass direction
+//          uiManager.compassDirection(direction);
         }
     }
 
@@ -106,7 +120,7 @@ public class MainActivity extends AppCompatActivity implements GameEventListener
         }
 
         // Update AR view if it's active (pass both monster position and player orientation)
-        com.youcanrun.ar.ARActivity.updateMonster(monsterPos, playerOri);
+        ARActivity.updateMonster(monsterPos, playerOri);
     }
 
     public boolean checkSystemSupport(Activity activity) {
