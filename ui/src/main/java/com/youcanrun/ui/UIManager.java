@@ -26,18 +26,15 @@ public class UIManager {
     public OdometerView odometerView;
     public SpeedometerView speedometerView;
     public CompassView compassView;
-
     public ProxSensorView proxSensorView;
-
     private int proxSensorTolerance = 2;
-
     private Button startBtn;
     private ImageButton quitBtn;
     private ImageButton cameraBtn;
     private boolean scanInit = false;
     private OnCameraButtonClickListener cameraButtonListener;
-
     private float lastPlayerAngle = 0f;
+    private SignalSliderView signalStrengthSlider;
 
 
     public interface OnCameraButtonClickListener {
@@ -110,6 +107,9 @@ public class UIManager {
         //Reference proxSensorView
         proxSensorView = hud.findViewById(R.id.ProxSensorView);
 
+        // Reference SignalSliderView
+        signalStrengthSlider = hud.findViewById(R.id.SignalSliderView);
+
         cameraBtn = hud.findViewById(R.id.camera_button);
         cameraBtn.setOnClickListener(v -> {
             // Launch AR Activity directly from UIManager
@@ -148,7 +148,6 @@ public class UIManager {
     private TextView devDirectionTextView;
     private DevMapView devMapView;
     private TextView devDistanceTextView;
-
     private TextView devDeltaTextView;
     private TextView devPlayerDistanceTextView;
 
@@ -233,9 +232,27 @@ public class UIManager {
             float pDiff = proxSensorView.POStoAngle(pDir);
             if( !( (pDiff < (lastPlayerAngle+proxSensorTolerance)) && (pDiff > (lastPlayerAngle-proxSensorTolerance))) ) {
                 proxSensorView.updateProxSensor(mPos, pDir);
+
+                if (signalStrengthSlider != null) {
+                    proxSensorView.setSignalStrength(signalStrengthSlider.getFillFraction());
+                }
+
                 lastPlayerAngle = pDiff;
             }
         }
+    }
+
+    public void updateProxSensorEnragement(float enragement) {
+        if (proxSensorView != null) {
+            proxSensorView.setEnragement(enragement);
+        }
+    }
+
+    public float getSignalStrength() {
+        if (signalStrengthSlider != null) {
+            return signalStrengthSlider.getFillFraction();
+        }
+        return 0.5f; // Default value
     }
 
     public void updateDevHudDirection(Vector3 delta){

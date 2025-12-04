@@ -110,13 +110,21 @@ public class MainActivity extends AppCompatActivity implements GameEventListener
             uiManager.updateDevHudMapView(monsterPos, playerOri);
             uiManager.updateDevHudDistance(monsterDistanceToPlayer);
 
+            float signalStrength = uiManager.getSignalStrength();
+            if (coreLogicManager != null) {
+                coreLogicManager.setSignalStrength(signalStrength);
+
+                // Get monster enragement and pass to ProxSensor
+                if (coreLogicManager.getMonster() != null) {
+                    float enragement = coreLogicManager.getMonster().getEnragement();
+                    uiManager.updateProxSensorEnragement(enragement);
+                }
+            }
+
+            uiManager.updateProxSensor(monsterPos, playerOri);
         }
 
-        // Update AR view if it's active (pass both monster position and player orientation)
         ARActivity.updateMonster(monsterPos, playerOri);
-
-        //update the prox sensor
-        uiManager.updateProxSensor(monsterPos, playerOri);
     }
 
     public boolean checkSystemSupport(Activity activity) {
