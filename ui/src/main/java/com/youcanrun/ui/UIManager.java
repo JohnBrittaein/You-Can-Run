@@ -26,11 +26,16 @@ public class UIManager {
     public OdometerView odometerView;
     public SpeedometerView speedometerView;
     public CompassView compassView;
+
+    public ProxSensorView proxSensorView;
+
     private Button startBtn;
     private ImageButton quitBtn;
     private ImageButton cameraBtn;
     private boolean scanInit = false;
     private OnCameraButtonClickListener cameraButtonListener;
+
+    private float lastPlayerAngle = 0f;
 
     public interface OnCameraButtonClickListener {
         void onCameraButtonClicked();
@@ -98,6 +103,9 @@ public class UIManager {
 
         // Reference SpeedometerView
         compassView = hud.findViewById(R.id.CompassView);
+
+        //Reference proxSensorView
+        proxSensorView = hud.findViewById(R.id.ProxSensorView);
 
         cameraBtn = hud.findViewById(R.id.camera_button);
         cameraBtn.setOnClickListener(v -> {
@@ -214,6 +222,16 @@ public class UIManager {
         }
     }
 
+    public void updateProxSensor(final Vector3 mPos, final Vector3 pDir){
+        if (proxSensorView != null && mPos != null) {
+            float pDiff = (float)((180)*Math.cos((pDir.z)/(pDir.x)));
+            if( !( (pDiff < (lastPlayerAngle+10)) && (pDiff > (lastPlayerAngle-10))) ) {
+                proxSensorView.updateProxSensor(mPos, pDir);
+                lastPlayerAngle = pDiff;
+            }
+        }
+    }
+
     public void updateDevHudDirection(Vector3 delta){
         // Update delta
         if(delta == null) return;
@@ -227,7 +245,6 @@ public class UIManager {
                 devDirectionTextView.setText(deltaText);
             });
         }
-
     }
 
     public void updateDevHudMapView(final Vector3 mPos, final Vector3 pDir){

@@ -100,6 +100,7 @@ public class MainActivity extends AppCompatActivity implements GameEventListener
         if (uiManager != null) {
             uiManager.updateDevHudDirection(direction);
             uiManager.updateCompass(direction);
+
         }
     }
 
@@ -113,6 +114,9 @@ public class MainActivity extends AppCompatActivity implements GameEventListener
 
         // Update AR view if it's active (pass both monster position and player orientation)
         ARActivity.updateMonster(monsterPos, playerOri);
+
+        //update the prox sensor
+        uiManager.updateProxSensor(monsterPos, playerOri);
     }
 
     public boolean checkSystemSupport(Activity activity) {

@@ -8,6 +8,8 @@ import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.view.View;
 
+import androidx.annotation.NonNull;
+
 public class SpeedometerView extends View {
 
     private float speed = 0f; // current speed
@@ -40,7 +42,7 @@ public class SpeedometerView extends View {
     }
 
     @Override
-    protected void onDraw(Canvas canvas) {
+    protected void onDraw(@NonNull Canvas canvas) {
         super.onDraw(canvas);
 
         String text = String.format("%.2f m/s", speed);
