@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ripple xmlns:android="http://schemas.android.com/apk/res/android"
+    android:color="#6600FFAA"> <!-- glow pulse color -->
+
+    <!-- Mask defines the ripple area and corner radius -->
+    <item android:id="@android:id/mask">
+        <shape android:shape="rectangle">
+            <solid android:color="@color/background" />
+            <corners android:radius="8dp" />
+            <!-- thickness of border -->
+            <stroke
+                android:width="10dp"
+            android:color="@color/primary" />
+        </shape>
+    </item>
+
+    <item android:drawable="@drawable/button_selector"/>
+</ripple>
