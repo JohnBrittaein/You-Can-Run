@@ -17,6 +17,7 @@ public class ProxSensorView extends View {
 
     Paint paint = new Paint();
     private float delta;
+    private float playerDirection;
 
     public ProxSensorView(Context context) {
         super(context);
@@ -41,25 +42,54 @@ public class ProxSensorView extends View {
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         setMeasuredDimension(MeasureSpec.getSize(widthMeasureSpec), MeasureSpec.getSize(heightMeasureSpec));
     }
-    void updateProxSensor(Vector3 monsterPosition, Vector3 playerPosition){
-        float monsterDirection = (float)(180f*Math.cos(monsterPosition.z/monsterPosition.x));
-        float playerDirection = (float)(180f*Math.cos(playerPosition.z/playerPosition.x));
+    public void updateProxSensor(Vector3 monsterPosition, Vector3 playerPosition){
+        float monsterDirection = POStoAngle(monsterPosition);
+        playerDirection = POStoAngle(playerPosition);
 
         float diff = 0f;
-        if ((playerDirection - monsterDirection) > 180){
-           diff = 360 - (playerDirection - monsterDirection);
+
+        if ((Math.max(playerDirection,monsterDirection) - Math.min(playerDirection,monsterDirection)) > 180){
+           diff = 360 - (Math.max(playerDirection,monsterDirection) - Math.min(playerDirection,monsterDirection));
         }
         else{
-            diff = playerDirection - monsterDirection;
+            diff = Math.max(playerDirection,monsterDirection) - Math.min(playerDirection,monsterDirection);
         }
-
         delta = ((180 - diff)/180) / 2;
         invalidate();
 
-        Log.i("diff", "delta: " + delta);
 
-//        Log.i("diff", "diff: " + diff);
-//        Log.i("diff", "delta: " + delta);
+
+        Log.i("diff", "PDir: " + (playerDirection-monsterDirection));
+        //Log.i("diff", "diff: " + diff);
+        Log.i("diff", "delta: " + delta);
+    }
+
+    public float POStoAngle(Vector3 POS){
+        float angle = 0f;
+        if (POS.x < 0){//Quadrant 2 && 3
+            angle = (float) (180f+(90f * (Math.atan(POS.z / POS.x)/1.57079632679)));
+        }
+        else if (POS.x > 0 && POS.z > 0){//Quadrant 1
+            angle = (float) (90f * (Math.atan(POS.z / POS.x)/1.57079632679));
+        }
+        else if (POS.x > 0 && POS.z < 0){//Quadrant 4
+            angle = (float) (360f+(90*(Math.atan(POS.z / POS.x)/1.57079632679)));
+        }
+        else if(POS.x == 1){
+            angle = 0;
+        }
+        else if(POS.z == 1){
+            angle = 90;
+        }
+        else if(POS.z == -1){
+            angle = 270;
+        }
+
+        return angle;
+    }
+
+    public float getDelta(){
+        return delta;
     }
 
     @Override

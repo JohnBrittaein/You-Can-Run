@@ -29,6 +29,8 @@ public class UIManager {
 
     public ProxSensorView proxSensorView;
 
+    private int proxSensorTolerance = 2;
+
     private Button startBtn;
     private ImageButton quitBtn;
     private ImageButton cameraBtn;
@@ -36,6 +38,7 @@ public class UIManager {
     private OnCameraButtonClickListener cameraButtonListener;
 
     private float lastPlayerAngle = 0f;
+
 
     public interface OnCameraButtonClickListener {
         void onCameraButtonClicked();
@@ -145,6 +148,8 @@ public class UIManager {
     private TextView devDirectionTextView;
     private DevMapView devMapView;
     private TextView devDistanceTextView;
+
+    private TextView devDeltaTextView;
     private TextView devPlayerDistanceTextView;
 
     private void initDevHud(){
@@ -163,6 +168,7 @@ public class UIManager {
         devMapView = devHud.findViewById(R.id.devMapView);
         devDistanceTextView = devHud.findViewById(R.id.devMonsterDistanceTextView);
         devPlayerDistanceTextView = devHud.findViewById(R.id.devPlayerDistanceTextView);
+        devDeltaTextView = devHud.findViewById(R.id.devDeltaTextView);
         Log.d(TAG,"Dev Hud Initialized");
     }
 
@@ -224,8 +230,8 @@ public class UIManager {
 
     public void updateProxSensor(final Vector3 mPos, final Vector3 pDir){
         if (proxSensorView != null && mPos != null) {
-            float pDiff = (float)((180)*Math.cos((pDir.z)/(pDir.x)));
-            if( !( (pDiff < (lastPlayerAngle+10)) && (pDiff > (lastPlayerAngle-10))) ) {
+            float pDiff = proxSensorView.POStoAngle(pDir);
+            if( !( (pDiff < (lastPlayerAngle+proxSensorTolerance)) && (pDiff > (lastPlayerAngle-proxSensorTolerance))) ) {
                 proxSensorView.updateProxSensor(mPos, pDir);
                 lastPlayerAngle = pDiff;
             }
@@ -245,6 +251,9 @@ public class UIManager {
                 devDirectionTextView.setText(deltaText);
             });
         }
+        if(devDeltaTextView != null){
+            devDeltaTextView.setText("Delta: " + proxSensorView.getDelta());
+        }
     }
 
     public void updateDevHudMapView(final Vector3 mPos, final Vector3 pDir){
@@ -260,6 +269,7 @@ public class UIManager {
         if(devDistanceTextView != null){
             ((Activity) context).runOnUiThread(() -> {
                 devDistanceTextView.setText(String.format("Distance: %.2f m", distance));
+
             });
         }
 
