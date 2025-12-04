@@ -9,20 +9,14 @@ import android.util.AttributeSet;
 import android.view.View;
 
 import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
 
 public class SignalStrengthView extends View {
 
-    private static final int MAX_STRENGTH = 10; // number of bars
-    private int signalStrength = 0; // 0 to MAX_STRENGTH
+    private static final int MAX_STRENGTH = 10;
+    private int signalStrength = 0;
 
     private Paint barPaint;
     private int[] barColors;
-
-    private Drawable baseDrawable;
-    private Drawable glowDrawable;
-    private Drawable rippleDrawable;
-    private Drawable selectorDrawable;
 
     public SignalStrengthView(Context context) {
         super(context);
@@ -49,15 +43,10 @@ public class SignalStrengthView extends View {
                 Color.GREEN,
                 Color.GREEN,
                 Color.YELLOW,
-                Color.rgb(255, 165, 0), // orange
+                Color.rgb(255, 165, 0),
                 Color.RED
         };
 
-        // Load custom drawables
-        baseDrawable = ContextCompat.getDrawable(context, R.drawable.button_base);
-        glowDrawable = ContextCompat.getDrawable(context, R.drawable.button_glow);
-        rippleDrawable = ContextCompat.getDrawable(context, R.drawable.button_ripple);
-        selectorDrawable = ContextCompat.getDrawable(context, R.drawable.button_selector);
     }
 
     public void setSignalStrength(int strength) {
@@ -78,7 +67,7 @@ public class SignalStrengthView extends View {
         int width = getWidth();
         int height = getHeight();
 
-        int barSpacing = 4; // vertical gap between bars
+        int barSpacing = 4;
         int singleBarHeight = (height - (MAX_STRENGTH - 1) * barSpacing) / MAX_STRENGTH;
 
         // Draw bars from bottom to top
@@ -88,29 +77,14 @@ public class SignalStrengthView extends View {
             int left = 0;
             int right = width;
 
-            // Draw base drawable for this bar
-            if (baseDrawable != null) {
-                baseDrawable.setBounds(left, top, right, bottom);
-                baseDrawable.draw(canvas);
-            }
-
             // Draw the bar color based on signal strength
             if (i < signalStrength) {
                 barPaint.setColor(barColors[Math.min(i, barColors.length - 1)]);
             } else {
-                barPaint.setColor(Color.LTGRAY);
+                barPaint.setColor(Color.DKGRAY);
             }
             canvas.drawRect(left, top, right, bottom, barPaint);
 
-            // Optional: draw glow or selector on top of each bar
-            if (glowDrawable != null) {
-                glowDrawable.setBounds(left, top, right, bottom);
-                glowDrawable.draw(canvas);
-            }
-            if (selectorDrawable != null) {
-                selectorDrawable.setBounds(left, top, right, bottom);
-                selectorDrawable.draw(canvas);
-            }
         }
     }
 }

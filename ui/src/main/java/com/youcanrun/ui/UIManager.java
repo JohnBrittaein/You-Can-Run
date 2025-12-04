@@ -35,10 +35,17 @@ public class UIManager {
     private OnCameraButtonClickListener cameraButtonListener;
     private float lastPlayerAngle = 0f;
     private SignalSliderView signalStrengthSlider;
+    private SignalStrengthView signalStrengthView;
+    private com.youcanrun.audio.AudioManager audioManager;
+    private OnGameStartListener gameStartListener;
 
 
     public interface OnCameraButtonClickListener {
         void onCameraButtonClicked();
+    }
+
+    public interface OnGameStartListener {
+        void onGameStarted();
     }
 
     public UIManager(Context context) {
@@ -46,6 +53,7 @@ public class UIManager {
         setStartMenuVisible();
         showDHudBtn = startMenuView.findViewById(R.id.show_dev_hud_button);
         showDHudBtn.setOnClickListener(v -> {
+            playClickSound();
             if (scanInit) {
                 if (devHud.getVisibility() != View.VISIBLE) {
                     setDevHudVisible(true);
@@ -56,12 +64,45 @@ public class UIManager {
         });
         startBtn = startMenuView.findViewById(R.id.start_button);
         startBtn.setOnClickListener(v -> {
+            playClickSound();
             initHud();
             initDevHud();
             scanInit = true;
             startBtn.setVisibility(View.GONE);
+
+            // Start the game
+            if (gameStartListener != null) {
+                gameStartListener.onGameStarted();
+                Log.d(TAG, "Game start triggered from start button");
+            }
         });
         Log.d(TAG, "UIManager initialized");
+    }
+
+    /**
+     * Set the AudioManager instance for playing UI sounds
+     */
+    public void setAudioManager(com.youcanrun.audio.AudioManager audioManager) {
+        this.audioManager = audioManager;
+    }
+
+    /**
+     * Set the game start listener
+     */
+    public void setOnGameStartListener(OnGameStartListener listener) {
+        this.gameStartListener = listener;
+    }
+
+    /**
+     * Play UI click sound if AudioManager is available
+     */
+    private void playClickSound() {
+        Log.d(TAG, "playClickSound called - audioManager is " + (audioManager != null ? "available" : "null"));
+        if (audioManager != null) {
+            audioManager.playUIClick();
+        } else {
+            Log.w(TAG, "AudioManager is null, cannot play click sound");
+        }
     }
 
     /**
@@ -110,14 +151,19 @@ public class UIManager {
         // Reference SignalSliderView
         signalStrengthSlider = hud.findViewById(R.id.SignalSliderView);
 
+        // Reference SignalStrengthView (audio level meter)
+        signalStrengthView = hud.findViewById(R.id.SignalStrengthView);
+
         cameraBtn = hud.findViewById(R.id.camera_button);
         cameraBtn.setOnClickListener(v -> {
+            playClickSound();
             // Launch AR Activity directly from UIManager
             launchARActivity();
         });
 
         quitBtn = hud.findViewById(R.id.quit_button);
         quitBtn.setOnClickListener(v -> {
+            playClickSound();
             // TODO: implement method when the game ends, or quits
             // Send message to Quit the game
         });
@@ -253,6 +299,20 @@ public class UIManager {
             return signalStrengthSlider.getFillFraction();
         }
         return 0.5f; // Default value
+    }
+
+    /**
+     * Update the audio level meter with current audio level
+     * @param audioLevel Audio level from 0.0 to 1.0
+     */
+    public void updateAudioLevelMeter(float audioLevel) {
+        if (signalStrengthView != null) {
+            ((Activity) context).runOnUiThread(() -> {
+                // Convert 0.0-1.0 to 0-10 bars
+                int bars = Math.round(audioLevel * 10);
+                signalStrengthView.setSignalStrength(bars);
+            });
+        }
     }
 
     public void updateDevHudDirection(Vector3 delta){
