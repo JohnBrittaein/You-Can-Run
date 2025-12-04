@@ -10,13 +10,16 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.youcanrun.ar.ARActivity;
 import com.youcanrun.audio.AudioManager;
 import com.youcanrun.core.CoreLogicManager;
 import com.youcanrun.core.GameEventListener;
+import com.youcanrun.sensors.MotionTracker;
 import com.youcanrun.ui.UIManager;
 import com.youcanrun.utils.Vector3;
 
 import java.util.Objects;
+import com.youcanrun.ui.OdometerView;
 
 /**
  * The MainActivity serves as the orchestrator between all of the other modules
@@ -80,6 +83,7 @@ public class MainActivity extends AppCompatActivity implements GameEventListener
     public void onSpeedChanged(float speed) {
         if (uiManager != null) {
             uiManager.updateDevHudSpeed(speed);
+            uiManager.updateSpeedometer(speed);
         }
     }
 
@@ -87,7 +91,7 @@ public class MainActivity extends AppCompatActivity implements GameEventListener
     public void onPlayerDistanceChanged(float distance) {
         if (uiManager != null) {
             uiManager.updateDevHudPlayerDistance(distance);
-
+            uiManager.updateOdometer(distance);
         }
     }
 
@@ -95,6 +99,8 @@ public class MainActivity extends AppCompatActivity implements GameEventListener
     public void onPlayerDirectionChanged(Vector3 direction) {
         if (uiManager != null) {
             uiManager.updateDevHudDirection(direction);
+            uiManager.updateCompass(direction);
+
         }
     }
 
@@ -103,10 +109,22 @@ public class MainActivity extends AppCompatActivity implements GameEventListener
         if (uiManager != null) {
             uiManager.updateDevHudMapView(monsterPos, playerOri);
             uiManager.updateDevHudDistance(monsterDistanceToPlayer);
+
+            float signalStrength = uiManager.getSignalStrength();
+            if (coreLogicManager != null) {
+                coreLogicManager.setSignalStrength(signalStrength);
+
+                // Get monster enragement and pass to ProxSensor
+                if (coreLogicManager.getMonster() != null) {
+                    float enragement = coreLogicManager.getMonster().getEnragement();
+                    uiManager.updateProxSensorEnragement(enragement);
+                }
+            }
+
+            uiManager.updateProxSensor(monsterPos, playerOri);
         }
 
-        // Update AR view if it's active (pass both monster position and player orientation)
-        com.youcanrun.ar.ARActivity.updateMonster(monsterPos, playerOri);
+        ARActivity.updateMonster(monsterPos, playerOri);
     }
 
     public boolean checkSystemSupport(Activity activity) {

@@ -23,12 +23,20 @@ import com.youcanrun.utils.Vector3;
 public class UIManager {
     private static final String TAG = "UIManager";
     private Context context;
-
+    public OdometerView odometerView;
+    public SpeedometerView speedometerView;
+    public CompassView compassView;
+    public ProxSensorView proxSensorView;
+    private int proxSensorTolerance = 2;
     private Button startBtn;
     private ImageButton quitBtn;
     private ImageButton cameraBtn;
     private boolean scanInit = false;
     private OnCameraButtonClickListener cameraButtonListener;
+    private float lastPlayerAngle = 0f;
+    private SignalSliderView signalStrengthSlider;
+
+
     public interface OnCameraButtonClickListener {
         void onCameraButtonClicked();
     }
@@ -87,6 +95,21 @@ public class UIManager {
         // Add it on top of existing layout
         root.addView(hud);
 
+        // Reference OdometerView
+        odometerView = hud.findViewById(R.id.OdometerView);
+
+        // Reference SpeedometerView
+        speedometerView = hud.findViewById(R.id.SpeedometerView);
+
+        // Reference SpeedometerView
+        compassView = hud.findViewById(R.id.CompassView);
+
+        //Reference proxSensorView
+        proxSensorView = hud.findViewById(R.id.ProxSensorView);
+
+        // Reference SignalSliderView
+        signalStrengthSlider = hud.findViewById(R.id.SignalSliderView);
+
         cameraBtn = hud.findViewById(R.id.camera_button);
         cameraBtn.setOnClickListener(v -> {
             // Launch AR Activity directly from UIManager
@@ -125,6 +148,7 @@ public class UIManager {
     private TextView devDirectionTextView;
     private DevMapView devMapView;
     private TextView devDistanceTextView;
+    private TextView devDeltaTextView;
     private TextView devPlayerDistanceTextView;
 
     private void initDevHud(){
@@ -143,6 +167,7 @@ public class UIManager {
         devMapView = devHud.findViewById(R.id.devMapView);
         devDistanceTextView = devHud.findViewById(R.id.devMonsterDistanceTextView);
         devPlayerDistanceTextView = devHud.findViewById(R.id.devPlayerDistanceTextView);
+        devDeltaTextView = devHud.findViewById(R.id.devDeltaTextView);
         Log.d(TAG,"Dev Hud Initialized");
     }
 
@@ -169,6 +194,66 @@ public class UIManager {
         }
     }
 
+    public void updateOdometer(float distance){
+        Log.i("Distance", "updateOdometer: " + distance);
+        if (odometerView != null) {
+            ((Activity) context).runOnUiThread(() -> {
+                    odometerView.setDistance(distance);
+            });
+        }
+    }
+
+    public void updateSpeedometer(float speed){
+        Log.i("Speed", "updateSpeedometer: " + speed);
+        if (speedometerView != null) {
+            ((Activity) context).runOnUiThread(() -> {
+                speedometerView.setSpeed(speed);
+            });
+        }
+    }
+
+    public void updateCompass(Vector3 delta){
+        // Update delta
+        if(delta == null) return;
+
+        if(compassView != null){
+            ((Activity) context).runOnUiThread(() -> {
+                String deltaText = String.format(
+                        "Delta: X: %.3f, Y: %.3f, Z: %.3f",
+                        delta.x, delta.y, delta.z
+                );
+                compassView.setCompassDirection(delta);
+            });
+        }
+    }
+
+    public void updateProxSensor(final Vector3 mPos, final Vector3 pDir){
+        if (proxSensorView != null && mPos != null) {
+            float pDiff = proxSensorView.POStoAngle(pDir);
+            if( !( (pDiff < (lastPlayerAngle+proxSensorTolerance)) && (pDiff > (lastPlayerAngle-proxSensorTolerance))) ) {
+                proxSensorView.updateProxSensor(mPos, pDir);
+
+                if (signalStrengthSlider != null) {
+                    proxSensorView.setSignalStrength(signalStrengthSlider.getFillFraction());
+                }
+
+                lastPlayerAngle = pDiff;
+            }
+        }
+    }
+
+    public void updateProxSensorEnragement(float enragement) {
+        if (proxSensorView != null) {
+            proxSensorView.setEnragement(enragement);
+        }
+    }
+
+    public float getSignalStrength() {
+        if (signalStrengthSlider != null) {
+            return signalStrengthSlider.getFillFraction();
+        }
+        return 0.5f; // Default value
+    }
 
     public void updateDevHudDirection(Vector3 delta){
         // Update delta
@@ -183,6 +268,9 @@ public class UIManager {
                 devDirectionTextView.setText(deltaText);
             });
         }
+        if(devDeltaTextView != null){
+            devDeltaTextView.setText("Delta: " + proxSensorView.getDelta());
+        }
     }
 
     public void updateDevHudMapView(final Vector3 mPos, final Vector3 pDir){
@@ -194,13 +282,14 @@ public class UIManager {
         }
     }
 
-
     public void updateDevHudDistance(final float distance){
         if(devDistanceTextView != null){
             ((Activity) context).runOnUiThread(() -> {
                 devDistanceTextView.setText(String.format("Distance: %.2f m", distance));
+
             });
         }
+
     }
 
     public void setDevHudVisible(final boolean visible) {

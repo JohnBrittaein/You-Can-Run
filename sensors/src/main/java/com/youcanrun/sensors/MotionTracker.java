@@ -26,7 +26,6 @@ public class MotionTracker implements SensorEventListener {
     private Vector3 playerDirection = new Vector3(0,0,1);
     private float[] rotMatrix = new float[9];
     private float currentSpeed;
-
     private float currentDistance;
 
     /**
@@ -51,6 +50,7 @@ public class MotionTracker implements SensorEventListener {
 
     private float distanceTolarence = 0.001f;
 
+    //use this for the odometer - displays the distance travelled.
     public float getCurrentDistance(){
         return currentDistance;
     }
@@ -119,8 +119,8 @@ public class MotionTracker implements SensorEventListener {
                 motionListener.onPlayerDirectionUpdated(playerDirection);
             }
         }
-    }
 
+    }
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int i){}
@@ -163,4 +163,5 @@ public class MotionTracker implements SensorEventListener {
     public void setMotionListener(MotionListener listener) {
         this.motionListener = listener;
     }
+
 }

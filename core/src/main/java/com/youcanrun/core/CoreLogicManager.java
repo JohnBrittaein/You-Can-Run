@@ -28,6 +28,7 @@ public class CoreLogicManager implements MotionListener {
     private GameMap gameMap;
     private Vector3 playerDirection;
     private float playerSpeed;
+    private float signalStrength = 0.5f;
 
     private float playerDistance;
     private long lastUpdatedTime;
@@ -93,6 +94,9 @@ public class CoreLogicManager implements MotionListener {
         lastUpdatedTime = currentTime;
 
         if(gameMap != null && playerDirection != null){
+            float enragement = 1.0f + (signalStrength * 4.0f);
+            gameMap.getMonster().setEnragement(enragement);
+
             gameMap.update(playerSpeed, playerDirection, dt);
 
             Vector3 monsterPos = gameMap.getMonster().getPosition();
@@ -102,6 +106,17 @@ public class CoreLogicManager implements MotionListener {
                 mGameEventListener.onMapPositionsChanged(monsterPos, playerOri, monsterDistanceToPlayer);
             }
         }
+    }
+
+    public void setSignalStrength(float strength) {
+        this.signalStrength = Math.max(0f, Math.min(strength, 1f));
+    }
+
+    public Monster getMonster() {
+        if (gameMap != null) {
+            return gameMap.getMonster();
+        }
+        return null;
     }
 
     // Game start/stop and lifecycle controls
