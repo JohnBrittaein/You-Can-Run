@@ -56,8 +56,6 @@ public class MainActivity extends AppCompatActivity implements GameEventListener
         // Initialize UI first (handles all UI including camera button)
         uiManager = new UIManager(this);
 
-        odometerView = uiManager.odometerView; // directly access the public field
-
         // Initialize core game modules
         coreLogicManager = new CoreLogicManager(this);
         coreLogicManager.setGameEventListener(this);
@@ -96,10 +94,7 @@ public class MainActivity extends AppCompatActivity implements GameEventListener
     public void onPlayerDistanceChanged(float distance) {
         if (uiManager != null) {
             uiManager.updateDevHudPlayerDistance(distance);
-        }
-        // Update OdometerView if available
-        if (odometerView != null) {
-            odometerView.setDistance(distance);
+            uiManager.updateOdometer(distance);
         }
     }
 

@@ -10,6 +10,11 @@ public class OdometerView extends View {
     private float distance = 0f;
     private Paint textPaint;
 
+    public OdometerView(Context context) {
+        super(context);
+        init();
+    }
+
     public OdometerView(Context context, AttributeSet attrs) {
         super(context, attrs);
         textPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -17,9 +22,18 @@ public class OdometerView extends View {
         textPaint.setTextSize(70f);
     }
 
+    public OdometerView(Context context, AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+        init();
+    }
+
     public void setDistance(float distance) {
         this.distance = distance;
         invalidate(); // redraw the view
+    }
+
+    private void init() {
+        setBackgroundColor(Color.GRAY);
     }
 
     @Override

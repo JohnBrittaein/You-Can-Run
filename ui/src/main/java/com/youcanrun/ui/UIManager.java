@@ -173,6 +173,17 @@ public class UIManager {
         }
     }
 
+    public void updateOdometer(float distance){
+        Log.i("Distance", "updateOdometer: " + distance);
+        if (odometerView != null) {
+            ((Activity) context).runOnUiThread(() -> {
+                    odometerView.setDistance(distance);
+            });
+        }
+    }
+
+
+
     public void updateDevHudDirection(Vector3 delta){
         // Update delta
         if(delta == null) return;
@@ -204,9 +215,7 @@ public class UIManager {
                 devDistanceTextView.setText(String.format("Distance: %.2f m", distance));
             });
         }
-        if(odometerView != null){
-            odometerView.setDistance(distance);
-        }
+
     }
 
     public void setDevHudVisible(final boolean visible) {
