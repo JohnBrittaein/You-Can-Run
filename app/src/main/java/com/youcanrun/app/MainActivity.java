@@ -14,12 +14,10 @@ import com.youcanrun.ar.ARActivity;
 import com.youcanrun.audio.AudioManager;
 import com.youcanrun.core.CoreLogicManager;
 import com.youcanrun.core.GameEventListener;
-import com.youcanrun.sensors.MotionTracker;
 import com.youcanrun.ui.UIManager;
 import com.youcanrun.utils.Vector3;
 
 import java.util.Objects;
-import com.youcanrun.ui.OdometerView;
 
 /**
  * The MainActivity serves as the orchestrator between all of the other modules
@@ -39,6 +37,7 @@ public class MainActivity extends AppCompatActivity implements GameEventListener
     private CoreLogicManager coreLogicManager;
     private UIManager uiManager;
     private AudioManager audioManager;
+    private boolean gameStarted = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,27 +55,51 @@ public class MainActivity extends AppCompatActivity implements GameEventListener
         coreLogicManager = new CoreLogicManager(this);
         coreLogicManager.setGameEventListener(this);
 
+        // Initialize audio manager and connect it to UI
         audioManager = new AudioManager(this);
+        uiManager.setAudioManager(audioManager);
+
+        // Set game start listener - game will start when start button is clicked
+        uiManager.setOnGameStartListener(() -> startGame());
+
+        // Start white noise loop (will be controlled by monster position)
+        audioManager.startWhiteNoise();
 
         Log.d(TAG, "All modules initialized (AR is optional via camera button)");
+    }
+
+    /**
+     * Start the game (called when start button is clicked)
+     */
+    public void startGame() {
+        if (!gameStarted && coreLogicManager != null) {
+            coreLogicManager.startGame();
+            gameStarted = true;
+            Log.d(TAG, "Game started");
+        }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        if (coreLogicManager != null) {
+        // Only resume if game was already started
+        if (gameStarted && coreLogicManager != null) {
             coreLogicManager.resumeGame();
+            Log.d(TAG, "Game resumed");
         }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        // Don't pause the game - it needs to keep running when AR view is open
-        // to continue tracking movement and updating monster position
-        // if (coreLogicManager != null) {
-        //     coreLogicManager.pauseGame();
-        // }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (audioManager != null) {
+            audioManager.release();
+        }
     }
 
     @Override
@@ -122,6 +145,15 @@ public class MainActivity extends AppCompatActivity implements GameEventListener
             }
 
             uiManager.updateProxSensor(monsterPos, playerOri);
+
+            // Update white noise audio based on monster position
+            if (audioManager != null) {
+                audioManager.updateWhiteNoise(monsterPos, playerOri, monsterDistanceToPlayer, signalStrength);
+
+                // Update audio level meter with current audio level
+                float audioLevel = audioManager.getCurrentAudioLevel();
+                uiManager.updateAudioLevelMeter(audioLevel);
+            }
         }
 
         ARActivity.updateMonster(monsterPos, playerOri);
