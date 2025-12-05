@@ -3,6 +3,7 @@ package com.youcanrun.app;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -232,6 +233,18 @@ public class MainActivity extends AppCompatActivity implements GameEventListener
         }
 
         ARActivity.updateMonster(monsterPos, playerOri);
+    }
+
+    public void SaveData(String key_one, String key_two, float data){
+        SharedPreferences highScores_Manager = this.getSharedPreferences(key_one, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = highScores_Manager.edit();
+        editor.putFloat(key_two, data);
+        editor.apply();
+    }
+
+    public float loadData(String key_one, String key_two, float data){
+        SharedPreferences highScores_Manager = this.getSharedPreferences(key_one, Context.MODE_PRIVATE);
+        return highScores_Manager.getFloat(key_two,0f);
     }
 
     public boolean checkSystemSupport(Activity activity) {

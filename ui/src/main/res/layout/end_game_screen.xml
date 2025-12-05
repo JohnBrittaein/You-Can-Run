@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#0D0D0D"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <View
+        android:id="@+id/screen_glow"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/screen_background"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <TextView
+        android:id="@+id/GameOver"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="83dp"
+        android:layout_marginTop="67dp"
+        android:layout_marginEnd="83dp"
+        android:layout_marginBottom="597dp"
+        android:text="Game Over"
+        android:textColor="#00FF00"
+        android:textSize="50sp"
+        app:layout_constraintBottom_toBottomOf="@+id/screen_glow"
+        app:layout_constraintEnd_toEndOf="@+id/screen_glow"
+        app:layout_constraintStart_toStartOf="@+id/screen_glow"
+        app:layout_constraintTop_toTopOf="@+id/screen_glow" />
+
+    <TextView
+        android:id="@+id/Highscores"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="88dp"
+        android:layout_marginTop="172dp"
+        android:layout_marginEnd="220dp"
+        android:layout_marginBottom="533dp"
+        android:text="HighScores:"
+        android:textColor="#00FF00"
+        android:textSize="19sp"
+        app:layout_constraintBottom_toBottomOf="@+id/screen_glow"
+        app:layout_constraintEnd_toEndOf="@+id/screen_glow"
+        app:layout_constraintStart_toStartOf="@+id/screen_glow"
+        app:layout_constraintTop_toTopOf="@+id/screen_glow" />
+
+    <TextView
+        android:id="@+id/HTotDisRan"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="88dp"
+        android:layout_marginTop="198dp"
+        android:layout_marginEnd="160dp"
+        android:layout_marginBottom="26dp"
+        android:text="Total Distance Ran:"
+        android:textColor="#00FF00"
+        android:textSize="19sp"
+        app:layout_constraintBottom_toBottomOf="@+id/HLonRun"
+        app:layout_constraintEnd_toEndOf="@+id/screen_glow"
+        app:layout_constraintStart_toStartOf="@+id/screen_glow"
+        app:layout_constraintTop_toTopOf="@+id/screen_glow" />
+
+    <TextView
+        android:id="@+id/HLonRun"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="88dp"
+        android:layout_marginTop="224dp"
+        android:layout_marginEnd="212dp"
+        android:layout_marginBottom="481dp"
+        android:text="Longest Run:"
+        android:textColor="#00FF00"
+        android:textSize="19sp"
+        app:layout_constraintBottom_toBottomOf="@+id/screen_glow"
+        app:layout_constraintEnd_toEndOf="@+id/screen_glow"
+        app:layout_constraintStart_toStartOf="@+id/screen_glow"
+        app:layout_constraintTop_toTopOf="@+id/screen_glow" />
+
+
+    <TextView
+        android:id="@+id/HTopSpeed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="88dp"
+        android:layout_marginTop="250dp"
+        android:layout_marginEnd="230dp"
+        android:layout_marginBottom="455dp"
+        android:text="Top speed:"
+        android:textColor="#00FF00"
+        android:textSize="19sp"
+        app:layout_constraintBottom_toBottomOf="@+id/screen_glow"
+        app:layout_constraintEnd_toEndOf="@+id/screen_glow"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="@+id/screen_glow"
+        app:layout_constraintTop_toTopOf="@+id/screen_glow"
+        app:layout_constraintVertical_bias="1.0" />
+
+    <TextView
+        android:id="@+id/CurrentScore"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="88dp"
+        android:layout_marginTop="325dp"
+        android:layout_marginEnd="206dp"
+        android:layout_marginBottom="380dp"
+        android:text="Current Score"
+        android:textColor="#00FF00"
+        android:textSize="19sp"
+        app:layout_constraintBottom_toBottomOf="@+id/screen_glow"
+        app:layout_constraintEnd_toEndOf="@+id/screen_glow"
+        app:layout_constraintStart_toStartOf="@+id/screen_glow"
+        app:layout_constraintTop_toTopOf="@+id/screen_glow" />
+
+    <TextView
+        android:id="@+id/TotDisRan"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="88dp"
+        android:layout_marginTop="351dp"
+        android:layout_marginEnd="160dp"
+        android:layout_marginBottom="354dp"
+        android:text="Total Distance Ran:"
+        android:textColor="#00FF00"
+        android:textSize="19sp"
+        app:layout_constraintBottom_toBottomOf="@+id/screen_glow"
+        app:layout_constraintEnd_toEndOf="@+id/screen_glow"
+        app:layout_constraintStart_toStartOf="@+id/screen_glow"
+        app:layout_constraintTop_toTopOf="@+id/screen_glow" />
+
+    <TextView
+        android:id="@+id/LonRun"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="88dp"
+        android:layout_marginTop="377dp"
+        android:layout_marginEnd="212dp"
+        android:layout_marginBottom="328dp"
+        android:text="Longest Run:"
+        android:textColor="#00FF00"
+        android:textSize="19sp"
+        app:layout_constraintBottom_toBottomOf="@+id/screen_glow"
+        app:layout_constraintEnd_toEndOf="@+id/screen_glow"
+        app:layout_constraintStart_toStartOf="@+id/screen_glow"
+        app:layout_constraintTop_toTopOf="@+id/screen_glow" />
+
+    <TextView
+        android:id="@+id/TopSpeed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="88dp"
+        android:layout_marginTop="403dp"
+        android:layout_marginEnd="230dp"
+        android:layout_marginBottom="302dp"
+        android:text="Top speed:"
+        android:textColor="#00FF00"
+        android:textSize="19sp"
+        app:layout_constraintBottom_toBottomOf="@+id/screen_glow"
+        app:layout_constraintEnd_toEndOf="@+id/screen_glow"
+        app:layout_constraintStart_toStartOf="@+id/screen_glow"
+        app:layout_constraintTop_toTopOf="@+id/screen_glow" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
