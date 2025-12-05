@@ -3,9 +3,12 @@ package com.youcanrun.core;
 import android.content.Context;
 import android.util.Log;
 
+import androidx.graphics.shapes.Utils;
+
 import com.youcanrun.sensors.MotionTracker;
 import com.youcanrun.sensors.MotionListener;
 import com.youcanrun.utils.Vector3;
+import com.youcanrun.utils.DataManager;
 
 /**
  * CoreLogicManager interprets data passed to it from other modules
@@ -27,9 +30,12 @@ public class CoreLogicManager implements MotionListener {
     // Game State Variables
     private GameMap gameMap;
     private Vector3 playerDirection;
+    private DataManager dataManager;
     private float playerSpeed;
 
     private float playerDistance;
+
+    private float playerTopSpeed;
     private long lastUpdatedTime;
 
     public CoreLogicManager(Context context) {
@@ -43,6 +49,8 @@ public class CoreLogicManager implements MotionListener {
         Monster monster = new Monster(spawnPos);
         gameMap = new GameMap(spawnPos, monster);
 
+        dataManager = new DataManager();
+        dataManager.setContext(context);
         lastUpdatedTime = System.currentTimeMillis();
 
         Log.d(TAG,"CoreLogicManager initialized");
@@ -57,6 +65,9 @@ public class CoreLogicManager implements MotionListener {
         Log.d(TAG, "Speed updated: " + speed);
 
         playerSpeed = speed;
+        if (playerTopSpeed<speed){
+            playerTopSpeed = speed;
+        }
 
         // This notifies the MainActivity that the speed has changed
         if (mGameEventListener != null){
@@ -68,6 +79,7 @@ public class CoreLogicManager implements MotionListener {
     public void onPlayerDistanceUpdated(float distance){
         Log.d(TAG, "Distance Updated: " + distance);
 
+        playerDistance = distance;
         // This notifies the MainActivity that the distance has changed
         if (mGameEventListener != null){
             mGameEventListener.onPlayerDistanceChanged(distance);
@@ -153,7 +165,24 @@ public class CoreLogicManager implements MotionListener {
      * player has either quit or has lost the game
      */
     public void endGame(){
-        // Show/saves scores
+        //updates new highscores
+        if(dataManager.loadData("HighScores", "Distance") < playerDistance){
+            //update new highscore
+            dataManager.saveData("HighScore", "Distance", playerDistance);
+        }
+        if(playerTopSpeed > dataManager.loadData("HighScore", "TopSpeed")){
+            dataManager.saveData("HighScore", "TopSpeed", playerTopSpeed);
+        }
+
+        float highscoreDistance = dataManager.loadData("HighScores", "Distance");
+        float currentDistance = playerDistance;
+        float totalDistanceRan = dataManager.loadData("HighScore", "TotalDistance") + playerDistance;
+        float highscoreTopSpeed = dataManager.loadData("HighScore", "TopSpeed");
+        //player top speed
+
+        dataManager.saveData("HighScore", "TotalDistance", totalDistanceRan);
+
         //end game logic
     }
 }
+
