@@ -3,8 +3,6 @@ package com.youcanrun.core;
 import android.content.Context;
 import android.util.Log;
 
-import androidx.graphics.shapes.Utils;
-
 import com.youcanrun.sensors.MotionTracker;
 import com.youcanrun.sensors.MotionListener;
 import com.youcanrun.utils.Vector3;
@@ -181,6 +179,8 @@ public class CoreLogicManager implements MotionListener {
         // Reset player state
         playerDirection = null;
         playerSpeed = 0f;
+        playerDistance = 0f;
+        playerTopSpeed = 0f;
         signalStrength = 0.5f;
 
         // Reinitialize monster and map
@@ -199,7 +199,7 @@ public class CoreLogicManager implements MotionListener {
      */
     public void endGame(){
         //updates new highscores
-        if(dataManager.loadData("HighScores", "Distance") < playerDistance){
+        if(dataManager.loadData("HighScore", "Distance") < playerDistance){
             //update new highscore
             dataManager.saveData("HighScore", "Distance", playerDistance);
         }
@@ -207,7 +207,7 @@ public class CoreLogicManager implements MotionListener {
             dataManager.saveData("HighScore", "TopSpeed", playerTopSpeed);
         }
 
-        float highscoreDistance = dataManager.loadData("HighScores", "Distance");
+        float highscoreDistance = dataManager.loadData("HighScore", "Distance");
         float currentDistance = playerDistance;
         float totalDistanceRan = dataManager.loadData("HighScore", "TotalDistance") + playerDistance;
         float highscoreTopSpeed = dataManager.loadData("HighScore", "TopSpeed");
@@ -217,8 +217,23 @@ public class CoreLogicManager implements MotionListener {
 
         //end game logic
         stopGame();
+    }
 
-        // Save score
+    /**
+     * Get current game stats for display
+     */
+    public GameStats getGameStats() {
+        float highscoreDistance = dataManager.loadData("HighScore", "Distance");
+        float totalDistance = dataManager.loadData("HighScore", "TotalDistance");
+        float highscoreTopSpeed = dataManager.loadData("HighScore", "TopSpeed");
+
+        return new GameStats(
+            playerDistance,
+            playerTopSpeed,
+            highscoreDistance,
+            totalDistance,
+            highscoreTopSpeed
+        );
     }
 }
 

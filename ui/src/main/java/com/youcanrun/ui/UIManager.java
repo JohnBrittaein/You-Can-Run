@@ -10,6 +10,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.youcanrun.core.GameStats;
 import com.youcanrun.utils.Vector3;
 
 
@@ -424,10 +425,11 @@ public class UIManager {
     }
 
     /**
-     * Show game over screen - returns to start menu
+     * Show game over screen with stats
      * @param caughtByMonster true if caught by monster, false if user quit
+     * @param stats game statistics to display
      */
-    public void showGameOverScreen(boolean caughtByMonster) {
+    public void showGameOverScreen(boolean caughtByMonster, GameStats stats) {
         if (!(context instanceof Activity)) return;
         Activity activity = (Activity) context;
 
@@ -440,16 +442,53 @@ public class UIManager {
                 devHud.setVisibility(View.GONE);
             }
 
-            // Show start menu again
-            setStartMenuVisible();
+            // Inflate and display end game screen
+            View endGameScreen = LayoutInflater.from(context).inflate(R.layout.end_game_screen, null);
+            activity.setContentView(endGameScreen);
 
-            // Re-setup button listeners for the new view
-            setupStartMenuButtons();
+            // Update game over message
+            TextView gameOverText = endGameScreen.findViewById(R.id.GameOver);
+            if (caughtByMonster) {
+                gameOverText.setText("ERR: LOST CONNECTION");
+            } else {
+                gameOverText.setText("Terminated Scan");
+            }
 
-            // Reset scan
-            scanInit = false;
+            // Populate stats if available
+            if (stats != null) {
+                // High Scores
+                TextView hTotDisRan = endGameScreen.findViewById(R.id.HTotDisRan);
+                TextView hLonRun = endGameScreen.findViewById(R.id.HLonRun);
+                TextView hTopSpeed = endGameScreen.findViewById(R.id.HTopSpeed);
 
-            Log.d(TAG, "Game over - returned to start menu - " + (caughtByMonster ? "Caught" : "Quit"));
+                // Current Scores
+                TextView totDisRan = endGameScreen.findViewById(R.id.TotDisRan);
+                TextView lonRun = endGameScreen.findViewById(R.id.LonRun);
+                TextView topSpeed = endGameScreen.findViewById(R.id.TopSpeed);
+
+                // Format and display high scores
+                hTotDisRan.setText(String.format("Total Distance Ran: %.2f m", stats.totalDistance));
+                hLonRun.setText(String.format("Longest Run: %.2f m", stats.highscoreDistance));
+                hTopSpeed.setText(String.format("Top Speed: %.2f m/s", stats.highscoreTopSpeed));
+
+                // Format and display current game scores
+                totDisRan.setText(String.format("Total Distance Ran: %.2f m", stats.totalDistance));
+                lonRun.setText(String.format("Distance: %.2f m", stats.currentDistance));
+                topSpeed.setText(String.format("Top Speed: %.2f m/s", stats.currentTopSpeed));
+            }
+
+            // Wire up Exit button
+            Button exitBtn = endGameScreen.findViewById(R.id.ExitBtn);
+            exitBtn.setOnClickListener(v -> {
+                playClickSound();
+                // Return to start menu
+                setStartMenuVisible();
+                setupStartMenuButtons();
+                scanInit = false;
+                Log.d(TAG, "Exit button clicked - returning to start menu");
+            });
+
+            Log.d(TAG, "Game over screen displayed - " + (caughtByMonster ? "Caught" : "Quit"));
         });
     }
 }

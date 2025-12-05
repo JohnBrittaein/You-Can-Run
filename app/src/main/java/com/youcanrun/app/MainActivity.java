@@ -15,6 +15,7 @@ import com.youcanrun.ar.ARActivity;
 import com.youcanrun.audio.AudioManager;
 import com.youcanrun.core.CoreLogicManager;
 import com.youcanrun.core.GameEventListener;
+import com.youcanrun.core.GameStats;
 import com.youcanrun.sensors.HapticFeedbackManager;
 import com.youcanrun.ui.UIManager;
 import com.youcanrun.utils.Vector3;
@@ -130,9 +131,15 @@ public class MainActivity extends AppCompatActivity implements GameEventListener
             audioManager.stopWhiteNoise();
         }
 
+        // Get game stats
+        GameStats stats = null;
+        if (coreLogicManager != null) {
+            stats = coreLogicManager.getGameStats();
+        }
+
         // Show game over screen
         if (uiManager != null) {
-            uiManager.showGameOverScreen(caughtByMonster);
+            uiManager.showGameOverScreen(caughtByMonster, stats);
         }
 
         Log.d(TAG, "Game ended - " + (caughtByMonster ? "Caught by monster" : "User quit"));
@@ -233,18 +240,6 @@ public class MainActivity extends AppCompatActivity implements GameEventListener
         }
 
         ARActivity.updateMonster(monsterPos, playerOri);
-    }
-
-    public void SaveData(String key_one, String key_two, float data){
-        SharedPreferences highScores_Manager = this.getSharedPreferences(key_one, Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = highScores_Manager.edit();
-        editor.putFloat(key_two, data);
-        editor.apply();
-    }
-
-    public float loadData(String key_one, String key_two, float data){
-        SharedPreferences highScores_Manager = this.getSharedPreferences(key_one, Context.MODE_PRIVATE);
-        return highScores_Manager.getFloat(key_two,0f);
     }
 
     public boolean checkSystemSupport(Activity activity) {

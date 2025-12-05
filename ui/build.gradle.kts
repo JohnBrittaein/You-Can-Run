@@ -37,6 +37,7 @@ dependencies {
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
 
+    implementation(project(":core"))
     implementation(project(":utils"))
     implementation(project(":ar"))
     implementation(project(":audio"))
