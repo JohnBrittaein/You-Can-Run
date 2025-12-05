@@ -2,6 +2,7 @@ package com.youcanrun.core;
 
 import android.content.Context;
 import android.util.Log;
+import android.view.DragAndDropPermissions;
 
 import com.youcanrun.sensors.MotionTracker;
 import com.youcanrun.sensors.MotionListener;
@@ -43,7 +44,7 @@ public class CoreLogicManager implements MotionListener {
         motionTracker.setMotionListener(this);
 
         // Initialize monster,map other game related components
-        Vector3 spawnPos = new Vector3(100,100,100); //TODO: maybe implement a randomized edge spawning function
+        Vector3 spawnPos = genSpawnPosition();
         Monster monster = new Monster(spawnPos);
         gameMap = new GameMap(spawnPos, monster);
 
@@ -52,6 +53,49 @@ public class CoreLogicManager implements MotionListener {
         lastUpdatedTime = System.currentTimeMillis();
 
         Log.d(TAG,"CoreLogicManager initialized");
+    }
+
+    /**
+     * Generate a random spawn position in one of the four corners of the map
+     * @return Vector3 spawn position in world coordinates
+     */
+    private Vector3 genSpawnPosition(){
+        // Map boundaries - spawn at corners with distance from origin
+        float spawnDistance = 100.0f; // 100 meters from origin
+        float yHeight = 100.0f; // Fixed height
+
+        // Randomly select one of four corners (0-3)
+        int corner = (int)(Math.random() * 4);
+
+        float x, z;
+        switch(corner) {
+            case 0: // Northeast corner
+                x = spawnDistance;
+                z = spawnDistance;
+                Log.d(TAG, "Monster spawning at NORTHEAST corner");
+                break;
+            case 1: // Northwest corner
+                x = -spawnDistance;
+                z = spawnDistance;
+                Log.d(TAG, "Monster spawning at NORTHWEST corner");
+                break;
+            case 2: // Southeast corner
+                x = spawnDistance;
+                z = -spawnDistance;
+                Log.d(TAG, "Monster spawning at SOUTHEAST corner");
+                break;
+            case 3: // Southwest corner
+                x = -spawnDistance;
+                z = -spawnDistance;
+                Log.d(TAG, "Monster spawning at SOUTHWEST corner");
+                break;
+            default:
+                x = spawnDistance;
+                z = spawnDistance;
+                break;
+        }
+
+        return new Vector3(x, yHeight, z);
     }
 
     public void setGameEventListener(GameEventListener listener) {
@@ -183,8 +227,8 @@ public class CoreLogicManager implements MotionListener {
         playerTopSpeed = 0f;
         signalStrength = 0.5f;
 
-        // Reinitialize monster and map
-        Vector3 spawnPos = new Vector3(100, 100, 100);
+        // Reinitialize monster and map with random spawn position
+        Vector3 spawnPos = genSpawnPosition();
         Monster monster = new Monster(spawnPos);
         gameMap = new GameMap(spawnPos, monster);
 
