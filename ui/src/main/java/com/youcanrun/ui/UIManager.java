@@ -18,50 +18,101 @@ import com.youcanrun.utils.Vector3;
  * within the app. It manages the HUD, sensor displays (compass, speedometer, etc.),
  * and handles user interactions like the camera button.
  *
- * @date 11-07-2025
+ * @date 12-04-2025
  */
 public class UIManager {
     private static final String TAG = "UIManager";
-    private Context context;
-
+    private final Context context;
+    public OdometerView odometerView;
+    public SpeedometerView speedometerView;
+    public CompassView compassView;
+    public ProxSensorView proxSensorView;
     private Button startBtn;
-    private ImageButton quitBtn;
-    private ImageButton cameraBtn;
     private boolean scanInit = false;
-    private OnCameraButtonClickListener cameraButtonListener;
+    private float lastPlayerAngle = 0f;
+    private SignalSliderView signalStrengthSlider;
+    private SignalStrengthView signalStrengthView;
+    private com.youcanrun.audio.AudioManager audioManager;
+    private OnGameStartListener gameStartListener;
+    private OnGameEndListener gameEndListener;
+
+
     public interface OnCameraButtonClickListener {
         void onCameraButtonClicked();
+    }
+
+    public interface OnGameStartListener {
+        void onGameStarted();
+    }
+
+    public interface OnGameEndListener {
+        void onGameEnded();
     }
 
     public UIManager(Context context) {
         this.context = context;
         setStartMenuVisible();
-        showDHudBtn = startMenuView.findViewById(R.id.show_dev_hud_button);
-        showDHudBtn.setOnClickListener(v -> {
-            if (scanInit) {
-                if (devHud.getVisibility() != View.VISIBLE) {
-                    setDevHudVisible(true);
-                } else {
-                    setDevHudVisible(false);
-                }
-            }
-        });
-        startBtn = startMenuView.findViewById(R.id.start_button);
-        startBtn.setOnClickListener(v -> {
-            initHud();
-            initDevHud();
-            scanInit = true;
-            startBtn.setVisibility(View.GONE);
-        });
+        setupStartMenuButtons();
         Log.d(TAG, "UIManager initialized");
     }
 
     /**
-     * Set the camera button click listener
-     * This allows MainActivity to handle AR activity launch
+     * Setup start menu button listeners
+     * Called when start menu is shown (initially and after game over)
      */
-    public void setOnCameraButtonClickListener(OnCameraButtonClickListener listener) {
-        this.cameraButtonListener = listener;
+    private void setupStartMenuButtons() {
+        Button showDHudBtn = startMenuView.findViewById(R.id.show_dev_hud_button);
+        showDHudBtn.setOnClickListener(v -> {
+            playClickSound();
+            if (scanInit) {
+                setDevHudVisible(devHud.getVisibility() != View.VISIBLE);
+            }
+        });
+
+        startBtn = startMenuView.findViewById(R.id.start_button);
+        startBtn.setOnClickListener(v -> {
+            playClickSound();
+            initHud();
+            initDevHud();
+            scanInit = true;
+            startBtn.setVisibility(View.GONE);
+
+            // Start the game
+            if (gameStartListener != null) {
+                gameStartListener.onGameStarted();
+                Log.d(TAG, "Game start triggered from start button");
+            }
+        });
+    }
+
+    /**
+     * Set the AudioManager instance for playing UI sounds
+     */
+    public void setAudioManager(com.youcanrun.audio.AudioManager audioManager) {
+        this.audioManager = audioManager;
+    }
+
+    /**
+     * Set the game start listener
+     */
+    public void setOnGameStartListener(OnGameStartListener listener) {
+        this.gameStartListener = listener;
+    }
+
+    public void setOnGameEndListener(OnGameEndListener listener){
+        this.gameEndListener = listener;
+    }
+
+    /**
+     * Play UI click sound if AudioManager is available
+     */
+    private void playClickSound() {
+        Log.d(TAG, "playClickSound called - audioManager is " + (audioManager != null ? "available" : "null"));
+        if (audioManager != null) {
+            audioManager.playUIClick();
+        } else {
+            Log.w(TAG, "AudioManager is null, cannot play click sound");
+        }
     }
 
     /**
@@ -87,23 +138,46 @@ public class UIManager {
         // Add it on top of existing layout
         root.addView(hud);
 
-        cameraBtn = hud.findViewById(R.id.camera_button);
+        // Reference OdometerView
+        odometerView = hud.findViewById(R.id.OdometerView);
+
+        // Reference SpeedometerView
+        speedometerView = hud.findViewById(R.id.SpeedometerView);
+
+        // Reference SpeedometerView
+        compassView = hud.findViewById(R.id.CompassView);
+
+        //Reference proxSensorView
+        proxSensorView = hud.findViewById(R.id.ProxSensorView);
+
+        // Reference SignalSliderView
+        signalStrengthSlider = hud.findViewById(R.id.SignalSliderView);
+
+        // Reference SignalStrengthView (audio level meter)
+        signalStrengthView = hud.findViewById(R.id.SignalStrengthView);
+
+        ImageButton cameraBtn = hud.findViewById(R.id.camera_button);
         cameraBtn.setOnClickListener(v -> {
+            playClickSound();
             // Launch AR Activity directly from UIManager
             launchARActivity();
         });
 
-        quitBtn = hud.findViewById(R.id.quit_button);
+        ImageButton quitBtn = hud.findViewById(R.id.quit_button);
         quitBtn.setOnClickListener(v -> {
-            // TODO: implement method when the game ends, or quits
-            // Send message to Quit the game
+            playClickSound();
+            // Trigger game end listener
+            if (gameEndListener != null) {
+                gameEndListener.onGameEnded();
+                Log.d(TAG, "Quit button clicked - ending game");
+            }
         });
 
         Log.d(TAG,"Hud Initialized");
     }
     public void updateHud(){}
     private View startMenuView;
-    private Button showDHudBtn;
+
     public void setStartMenuVisible() {
         if (!(context instanceof Activity)) return;
         Activity activity = (Activity) context;
@@ -125,6 +199,7 @@ public class UIManager {
     private TextView devDirectionTextView;
     private DevMapView devMapView;
     private TextView devDistanceTextView;
+    private TextView devDeltaTextView;
     private TextView devPlayerDistanceTextView;
 
     private void initDevHud(){
@@ -143,6 +218,7 @@ public class UIManager {
         devMapView = devHud.findViewById(R.id.devMapView);
         devDistanceTextView = devHud.findViewById(R.id.devMonsterDistanceTextView);
         devPlayerDistanceTextView = devHud.findViewById(R.id.devPlayerDistanceTextView);
+        devDeltaTextView = devHud.findViewById(R.id.devDeltaTextView);
         Log.d(TAG,"Dev Hud Initialized");
     }
 
@@ -169,6 +245,81 @@ public class UIManager {
         }
     }
 
+    public void updateOdometer(float distance){
+        Log.i("Distance", "updateOdometer: " + distance);
+        if (odometerView != null) {
+            ((Activity) context).runOnUiThread(() -> {
+                    odometerView.setDistance(distance);
+            });
+        }
+    }
+
+    public void updateSpeedometer(float speed){
+        Log.i("Speed", "updateSpeedometer: " + speed);
+        if (speedometerView != null) {
+            ((Activity) context).runOnUiThread(() -> {
+                speedometerView.setSpeed(speed);
+            });
+        }
+    }
+
+    public void updateCompass(Vector3 delta){
+        // Update delta
+        if(delta == null) return;
+
+        if(compassView != null){
+            ((Activity) context).runOnUiThread(() -> {
+                String deltaText = String.format(
+                        "Delta: X: %.3f, Y: %.3f, Z: %.3f",
+                        delta.x, delta.y, delta.z
+                );
+                compassView.setCompassDirection(delta);
+            });
+        }
+    }
+
+    public void updateProxSensor(final Vector3 mPos, final Vector3 pDir){
+        if (proxSensorView != null && mPos != null) {
+            float pDiff = proxSensorView.POStoAngle(pDir);
+            int proxSensorTolerance = 2;
+            if( !( (pDiff < (lastPlayerAngle+ proxSensorTolerance)) && (pDiff > (lastPlayerAngle- proxSensorTolerance))) ) {
+                proxSensorView.updateProxSensor(mPos, pDir);
+
+                if (signalStrengthSlider != null) {
+                    proxSensorView.setSignalStrength(signalStrengthSlider.getFillFraction());
+                }
+
+                lastPlayerAngle = pDiff;
+            }
+        }
+    }
+
+    public void updateProxSensorEnragement(float enragement) {
+        if (proxSensorView != null) {
+            proxSensorView.setEnragement(enragement);
+        }
+    }
+
+    public float getSignalStrength() {
+        if (signalStrengthSlider != null) {
+            return signalStrengthSlider.getFillFraction();
+        }
+        return 0.5f; // Default value
+    }
+
+    /**
+     * Update the audio level meter with current audio level
+     * @param audioLevel Audio level from 0.0 to 1.0
+     */
+    public void updateAudioLevelMeter(float audioLevel) {
+        if (signalStrengthView != null) {
+            ((Activity) context).runOnUiThread(() -> {
+                // Convert 0.0-1.0 to 0-10 bars
+                int bars = Math.round(audioLevel * 10);
+                signalStrengthView.setSignalStrength(bars);
+            });
+        }
+    }
 
     public void updateDevHudDirection(Vector3 delta){
         // Update delta
@@ -183,6 +334,9 @@ public class UIManager {
                 devDirectionTextView.setText(deltaText);
             });
         }
+        if(devDeltaTextView != null){
+            devDeltaTextView.setText("Delta: " + proxSensorView.getDelta());
+        }
     }
 
     public void updateDevHudMapView(final Vector3 mPos, final Vector3 pDir){
@@ -194,13 +348,14 @@ public class UIManager {
         }
     }
 
-
     public void updateDevHudDistance(final float distance){
         if(devDistanceTextView != null){
             ((Activity) context).runOnUiThread(() -> {
                 devDistanceTextView.setText(String.format("Distance: %.2f m", distance));
+
             });
         }
+
     }
 
     public void setDevHudVisible(final boolean visible) {
@@ -209,5 +364,92 @@ public class UIManager {
                 devHud.setVisibility(visible ? View.VISIBLE : View.GONE);
             });
         }
+    }
+
+    /**
+     * Reset all UI displays to initial values
+     */
+    public void resetUIDisplays() {
+        if (!(context instanceof Activity)) return;
+        Activity activity = (Activity) context;
+
+        activity.runOnUiThread(() -> {
+            // Reset odometer
+            if (odometerView != null) {
+                odometerView.setDistance(0f);
+            }
+
+            // Reset speedometer
+            if (speedometerView != null) {
+                speedometerView.setSpeed(0f);
+            }
+
+            // Reset compass
+            if (compassView != null) {
+                compassView.setCompassDirection(new Vector3(0, 0, 0));
+            }
+
+            // Reset prox sensor
+            if (proxSensorView != null) {
+                proxSensorView.updateProxSensor(new Vector3(100, 100, 100), new Vector3(0, 0, 0));
+                proxSensorView.setEnragement(1.0f);
+            }
+
+            // Reset audio meter
+            if (signalStrengthView != null) {
+                signalStrengthView.setSignalStrength(0);
+            }
+
+            // Reset signal slider to middle
+            if (signalStrengthSlider != null) {
+                signalStrengthSlider.setFillFraction(0.5f);
+            }
+
+            // Reset dev HUD displays
+            if (devSpeedTextView != null) {
+                devSpeedTextView.setText("Speed: 0.00 m/s");
+            }
+            if (devDirectionTextView != null) {
+                devDirectionTextView.setText("Delta: X: 0.000, Y: 0.000, Z: 0.000");
+            }
+            if (devPlayerDistanceTextView != null) {
+                devPlayerDistanceTextView.setText("Player Distance: 0.00 m");
+            }
+            if (devDistanceTextView != null) {
+                devDistanceTextView.setText("Distance: 0.00 m");
+            }
+
+            Log.d(TAG, "UI displays reset");
+        });
+    }
+
+    /**
+     * Show game over screen - returns to start menu
+     * @param caughtByMonster true if caught by monster, false if user quit
+     */
+    public void showGameOverScreen(boolean caughtByMonster) {
+        if (!(context instanceof Activity)) return;
+        Activity activity = (Activity) context;
+
+        activity.runOnUiThread(() -> {
+            // Hide HUD
+            if (hud != null) {
+                hud.setVisibility(View.GONE);
+            }
+            if (devHud != null) {
+                devHud.setVisibility(View.GONE);
+            }
+
+            // Show start menu again
+            setStartMenuVisible();
+
+            // Re-setup button listeners for the new view
+            setupStartMenuButtons();
+
+            // Reset scan
+            scanInit = false;
+
+            Log.d(TAG, "Game over - returned to start menu - " + (caughtByMonster ? "Caught" : "Quit"));
+        });
     }
 }

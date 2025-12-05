@@ -14,9 +14,8 @@ import com.youcanrun.utils.Vector3;
 public class Monster {
     private static final String TAG = "Monster";
     private Vector3 position;
-    private Vector3 velocity;
-    private float baseSpeed;
-    private float momentum;
+    private final Vector3 velocity;
+    private final float baseSpeed;
     private float enragement;
 
     private float distanceToPlayer;
@@ -32,7 +31,6 @@ public class Monster {
                         position.z * position.z
         );
         this.baseSpeed = 1.0f;
-        this.momentum = 1.0f; // higher has snappier movement
         this.enragement = 1.0f;
         Log.d(TAG,"Monster created");
     }
@@ -79,15 +77,11 @@ public class Monster {
         //Log.d(TAG,"Distance To player: " + distance + " Player Speed: " + playerSpeed);
         //Log.d(TAG,"Position X: " + position.x + " Y: " + position.y + " Z: " + position.z);
         //Log.d(TAG,"Velocity X: " + velocity.x + " Y: " + velocity.y + " Z: " + velocity.z);
-    };
+    }
 
     public Vector3 getPosition(){return position;}
-    public Vector3 getVelocity(){return velocity;}
-
     public float getEnragement(){return enragement;}
-
     public void setEnragement(float enragement){this.enragement = enragement;}
-
     public float getDistanceToPlayer(){return distanceToPlayer;}
     public void setPosition(Vector3 nPosition){this.position = nPosition;}
 

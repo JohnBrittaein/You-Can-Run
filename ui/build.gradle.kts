@@ -39,4 +39,5 @@ dependencies {
 
     implementation(project(":utils"))
     implementation(project(":ar"))
+    implementation(project(":audio"))
 }

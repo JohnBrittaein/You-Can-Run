@@ -21,7 +21,7 @@ public class CoreLogicManager implements MotionListener {
     private static final String TAG = "CoreLogicManager";
 
     // TODO: Implement GameEventListener
-    private MotionTracker motionTracker;
+    private final MotionTracker motionTracker;
     private GameEventListener mGameEventListener;
 
 
@@ -32,6 +32,7 @@ public class CoreLogicManager implements MotionListener {
     private Vector3 playerDirection;
     private DataManager dataManager;
     private float playerSpeed;
+    private float signalStrength = 0.5f;
 
     private float playerDistance;
 
@@ -44,8 +45,7 @@ public class CoreLogicManager implements MotionListener {
         motionTracker.setMotionListener(this);
 
         // Initialize monster,map other game related components
-        Vector3 bounds = new Vector3(100,100,100);
-        Vector3 spawnPos = bounds; //TODO: maybe implement a randomized edge spawning function
+        Vector3 spawnPos = new Vector3(100,100,100); //TODO: maybe implement a randomized edge spawning function
         Monster monster = new Monster(spawnPos);
         gameMap = new GameMap(spawnPos, monster);
 
@@ -105,15 +105,33 @@ public class CoreLogicManager implements MotionListener {
         lastUpdatedTime = currentTime;
 
         if(gameMap != null && playerDirection != null){
+            float enragement = 1.0f + (signalStrength * 4.0f);
+            gameMap.getMonster().setEnragement(enragement);
+
             gameMap.update(playerSpeed, playerDirection, dt);
 
             Vector3 monsterPos = gameMap.getMonster().getPosition();
             Vector3 playerOri = playerDirection;
             float monsterDistanceToPlayer = gameMap.getMonster().getDistanceToPlayer();
+
+            if (monsterDistanceToPlayer < 0){
+                endGame();
+            }
             if (monsterPos != null && mGameEventListener != null){
                 mGameEventListener.onMapPositionsChanged(monsterPos, playerOri, monsterDistanceToPlayer);
             }
         }
+    }
+
+    public void setSignalStrength(float strength) {
+        this.signalStrength = Math.max(0f, Math.min(strength, 1f));
+    }
+
+    public Monster getMonster() {
+        if (gameMap != null) {
+            return gameMap.getMonster();
+        }
+        return null;
     }
 
     // Game start/stop and lifecycle controls
@@ -151,14 +169,29 @@ public class CoreLogicManager implements MotionListener {
         stopGameLoop();
     }
 
-    public void pauseGame(){
-        motionTracker.stopTracking();
-        stopGameLoop();
-    }
-
     public void resumeGame() {
         motionTracker.startTracking();
         startGameLoop();
+    }
+
+    /**
+     * Reset all game state variables for a new game
+     */
+    public void resetGame() {
+        // Reset player state
+        playerDirection = null;
+        playerSpeed = 0f;
+        signalStrength = 0.5f;
+
+        // Reinitialize monster and map
+        Vector3 spawnPos = new Vector3(100, 100, 100);
+        Monster monster = new Monster(spawnPos);
+        gameMap = new GameMap(spawnPos, monster);
+
+        // Reset timing
+        lastUpdatedTime = System.currentTimeMillis();
+
+        Log.d(TAG, "Game state reset - ready for new game");
     }
 
     /**
@@ -183,6 +216,9 @@ public class CoreLogicManager implements MotionListener {
         dataManager.saveData("HighScore", "TotalDistance", totalDistanceRan);
 
         //end game logic
+        stopGame();
+
+        // Save score
     }
 }
 

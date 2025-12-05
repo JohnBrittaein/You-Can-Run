@@ -7,13 +7,17 @@
 
     <ImageView
         android:id="@+id/hudBackground"
-        android:src="@drawable/screen_background"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_constraintStart_toStartOf="parent"
+        android:src="@drawable/screen_background"
+        android:clickable="false"
+        android:focusable="false"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent" />
+        app:layout_constraintVertical_bias="0.0" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/verticalGuideline"
@@ -27,12 +31,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.25" />
+        app:layout_constraintGuide_end="556dp" />
 
     <com.youcanrun.ui.ProxSensorView
         android:id="@+id/ProxSensorView"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_width="400dp"
+        android:layout_height="140dp"
         android:layout_margin="10dp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -41,18 +45,22 @@
 
     <com.youcanrun.ui.CompassView
         android:id="@+id/CompassView"
-        android:layout_width="0dp"
-        android:layout_height="85dp"
+        android:layout_width="110dp"
+        android:layout_height="110dp"
         android:layout_margin="8dp"
-        app:layout_constraintTop_toBottomOf="@id/proxBottomGuideline"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/circle_ripple"
+        app:layout_constraintEnd_toStartOf="@id/verticalGuideline"
+        app:layout_constraintHorizontal_bias="0.536"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/verticalGuideline" />
+        app:layout_constraintTop_toBottomOf="@id/proxBottomGuideline" />
 
     <com.youcanrun.ui.OdometerView
         android:id="@+id/OdometerView"
-        android:layout_width="0dp"
+        android:layout_width="190dp"
         android:layout_height="85dp"
         android:layout_margin="8dp"
+        android:background="@drawable/button_ripple"
         app:layout_constraintEnd_toStartOf="@id/verticalGuideline"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/CompassView"
@@ -60,9 +68,10 @@
 
     <com.youcanrun.ui.SpeedometerView
         android:id="@+id/SpeedometerView"
-        android:layout_width="0dp"
+        android:layout_width="190dp"
         android:layout_height="85dp"
         android:layout_margin="8dp"
+        android:background="@drawable/button_ripple"
         app:layout_constraintTop_toBottomOf="@id/OdometerView"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toStartOf="@id/verticalGuideline"
@@ -71,7 +80,7 @@
     <com.youcanrun.ui.SignalStrengthView
         android:id="@+id/SignalStrengthView"
         android:layout_width="60dp"
-        android:layout_height="0dp"
+        android:layout_height="460dp"
         app:layout_constraintTop_toBottomOf="@id/proxBottomGuideline"
         app:layout_constraintStart_toEndOf="@id/verticalGuideline"
         app:layout_constraintEnd_toStartOf="@id/SignalSliderView"
@@ -81,12 +90,13 @@
     <com.youcanrun.ui.SignalSliderView
         android:id="@+id/SignalSliderView"
         android:layout_width="60dp"
-        android:layout_height="0dp"
-        app:layout_constraintTop_toBottomOf="@id/proxBottomGuideline"
-        app:layout_constraintStart_toEndOf="@id/SignalStrengthView"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_height="460dp"
+        android:layout_margin="8dp"
         app:layout_constraintBottom_toTopOf="@id/camera_button"
-        android:layout_margin="8dp" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/SignalStrengthView"
+        app:layout_constraintTop_toBottomOf="@id/proxBottomGuideline"
+        app:layout_constraintVertical_bias="0.466" />
 
     <ImageButton
         android:id="@+id/camera_button"

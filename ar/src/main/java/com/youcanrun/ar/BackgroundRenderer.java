@@ -22,14 +22,7 @@ public class BackgroundRenderer {
     // Shader programs for different filters
     private int normalShaderProgram = -1;
     private int predatorShaderProgram = -1;
-    private int nightVisionShaderProgram = -1;
-    private int flirShaderProgram = -1;
     private int edgeDetectShaderProgram = -1;
-
-    private int positionHandle = -1;
-    private int texCoordHandle = -1;
-    private int textureUniform = -1;
-    private int timeUniform = -1;
 
     private FloatBuffer vertexBuffer;
     private FloatBuffer texCoordBuffer;
@@ -49,8 +42,6 @@ public class BackgroundRenderer {
         // Create all shader programs
         normalShaderProgram = createNormalShader();
         predatorShaderProgram = createPredatorShader();
-        nightVisionShaderProgram = createNightVisionShader();
-        flirShaderProgram = createFLIRShader();
         edgeDetectShaderProgram = createEdgeDetectShader();
 
         currentShaderProgram = normalShaderProgram;
@@ -193,54 +184,6 @@ public class BackgroundRenderer {
         return createProgramFromShaders(fragmentShader, "Predator");
     }
 
-    private int createNightVisionShader() {
-        String fragmentShader = "#version 100\n" +
-                "#extension GL_OES_EGL_image_external : require\n" +
-                "precision mediump float;\n" +
-                "uniform samplerExternalOES u_Texture;\n" +
-                "uniform float u_Time;\n" +
-                "varying vec2 v_TexCoord;\n" +
-                "void main() {\n" +
-                "  vec4 color = texture2D(u_Texture, v_TexCoord);\n" +
-                "  // Convert to grayscale and boost brightness\n" +
-                "  float luminance = (color.r + color.g + color.b) / 3.0;\n" +
-                "  luminance = pow(luminance, 0.7) * 1.5; // Brighten\n" +
-                "  // Apply green tint\n" +
-                "  vec3 nightVision = vec3(luminance * 0.2, luminance, luminance * 0.2);\n" +
-                "  // Add noise for realism\n" +
-                "  float noise = fract(sin(dot(v_TexCoord + u_Time * 0.1, vec2(12.9898, 78.233))) * 43758.5453) * 0.1;\n" +
-                "  // Add vignette\n" +
-                "  float dist = distance(v_TexCoord, vec2(0.5, 0.5));\n" +
-                "  float vignette = 1.0 - smoothstep(0.3, 0.8, dist);\n" +
-                "  gl_FragColor = vec4(nightVision * vignette + noise, 1.0);\n" +
-                "}\n";
-        return createProgramFromShaders(fragmentShader, "NightVision");
-    }
-
-    private int createFLIRShader() {
-        String fragmentShader = "#version 100\n" +
-                "#extension GL_OES_EGL_image_external : require\n" +
-                "precision mediump float;\n" +
-                "uniform samplerExternalOES u_Texture;\n" +
-                "varying vec2 v_TexCoord;\n" +
-                "void main() {\n" +
-                "  vec4 color = texture2D(u_Texture, v_TexCoord);\n" +
-                "  float temp = (color.r + color.g + color.b) / 3.0;\n" +
-                "  // FLIR white-hot thermal\n" +
-                "  vec3 flir;\n" +
-                "  if (temp < 0.33) {\n" +
-                "    flir = vec3(0.0, 0.0, temp * 3.0); // Black to blue\n" +
-                "  } else if (temp < 0.66) {\n" +
-                "    flir = vec3((temp - 0.33) * 3.0, 0.0, 1.0); // Blue to magenta\n" +
-                "  } else {\n" +
-                "    float t = (temp - 0.66) * 3.0;\n" +
-                "    flir = vec3(1.0, t, 1.0 - t); // Magenta to white\n" +
-                "  }\n" +
-                "  gl_FragColor = vec4(flir, 1.0);\n" +
-                "}\n";
-        return createProgramFromShaders(fragmentShader, "FLIR");
-    }
-
     private int createEdgeDetectShader() {
         String fragmentShader = "#version 100\n" +
                 "#extension GL_OES_EGL_image_external : require\n" +
@@ -313,10 +256,10 @@ public class BackgroundRenderer {
         GLES20.glDisable(GLES20.GL_BLEND);
 
         // Get uniform locations for current program
-        positionHandle = GLES20.glGetAttribLocation(currentShaderProgram, "a_Position");
-        texCoordHandle = GLES20.glGetAttribLocation(currentShaderProgram, "a_TexCoord");
-        textureUniform = GLES20.glGetUniformLocation(currentShaderProgram, "u_Texture");
-        timeUniform = GLES20.glGetUniformLocation(currentShaderProgram, "u_Time");
+        int positionHandle = GLES20.glGetAttribLocation(currentShaderProgram, "a_Position");
+        int texCoordHandle = GLES20.glGetAttribLocation(currentShaderProgram, "a_TexCoord");
+        int textureUniform = GLES20.glGetUniformLocation(currentShaderProgram, "u_Texture");
+        int timeUniform = GLES20.glGetUniformLocation(currentShaderProgram, "u_Time");
 
         // Set texture
         GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
@@ -381,10 +324,6 @@ public class BackgroundRenderer {
                 break;
         }
         Log.i(TAG, "Filter changed to: " + filter);
-    }
-
-    public CameraFilter getCurrentFilter() {
-        return currentFilter;
     }
 }
 

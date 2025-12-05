@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
@@ -36,12 +37,11 @@ public class CameraFragment extends Fragment {
     private Session arSession;
     private GLSurfaceView glSurfaceView;
     private ARRenderer arRenderer;
-    private boolean isSessionReady = false;
     private boolean userRequestedInstall = false;
     private String errorMessage = null;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Log.i(TAG, "========== CameraFragment onCreateView START ==========");
 
         // Create GLSurfaceView for AR rendering
@@ -115,7 +115,6 @@ public class CameraFragment extends Fragment {
             config.setFocusMode(Config.FocusMode.AUTO);
             arSession.configure(config);
 
-            isSessionReady = true;
             Log.i(TAG, "ARCore session created and configured successfully!");
             Toast.makeText(requireContext(), "ARCore initialized successfully", Toast.LENGTH_SHORT).show();
 
@@ -164,10 +163,6 @@ public class CameraFragment extends Fragment {
         } catch (Exception e) {
             Log.e(TAG, "Failed to open Play Store", e);
         }
-    }
-
-    public Session getArSession() {
-        return arSession;
     }
 
     /**

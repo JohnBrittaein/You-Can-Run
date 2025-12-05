@@ -11,9 +11,11 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.youcanrun.ar.ARActivity;
 import com.youcanrun.audio.AudioManager;
 import com.youcanrun.core.CoreLogicManager;
 import com.youcanrun.core.GameEventListener;
+import com.youcanrun.sensors.HapticFeedbackManager;
 import com.youcanrun.ui.UIManager;
 import com.youcanrun.utils.Vector3;
 
@@ -29,7 +31,7 @@ import java.util.Objects;
  * MainActivity displays the main HUD with sensors (compass, speedometer, etc.)
  * AR viewing is optional and triggered via the camera button, which launches ARActivity.
  *
- * @date 11-07-2025
+ * @date 12-04-2025
  */
 public class MainActivity extends AppCompatActivity implements GameEventListener {
     private static final String TAG = "MainActivity";
@@ -37,6 +39,12 @@ public class MainActivity extends AppCompatActivity implements GameEventListener
     private CoreLogicManager coreLogicManager;
     private UIManager uiManager;
     private AudioManager audioManager;
+    private HapticFeedbackManager hapticFeedbackManager;
+    private boolean gameStarted = false;
+    private boolean gameEnded = false;
+
+    // Game over threshold - monster catches player at this distance
+    private static final float GAME_OVER_DISTANCE = 1.0f; // 1 meter
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,33 +62,113 @@ public class MainActivity extends AppCompatActivity implements GameEventListener
         coreLogicManager = new CoreLogicManager(this);
         coreLogicManager.setGameEventListener(this);
 
+        // Initialize audio manager and connect it to UI
         audioManager = new AudioManager(this);
+        uiManager.setAudioManager(audioManager);
+
+        // Initialize haptic feedback manager
+        hapticFeedbackManager = new HapticFeedbackManager(this);
+
+        // Set game start listener - game will start when start button is clicked
+        uiManager.setOnGameStartListener(this::startGame);
+
+        // Set game end listener - ends game when quit button is clicked
+        uiManager.setOnGameEndListener(() -> endGame(false));
+
+        // Start white noise loop (will be controlled by monster position)
+        audioManager.startWhiteNoise();
 
         Log.d(TAG, "All modules initialized (AR is optional via camera button)");
+    }
+
+    /**
+     * Start the game (called when start button is clicked)
+     */
+    public void startGame() {
+        if (!gameStarted && coreLogicManager != null) {
+            // Reset game ended flag if starting a new game
+            gameEnded = false;
+
+            // Reset all game state before starting
+            coreLogicManager.resetGame();
+
+            // Reset UI displays
+            if (uiManager != null) {
+                uiManager.resetUIDisplays();
+            }
+
+            // Restart white noise audio
+            if (audioManager != null) {
+                audioManager.startWhiteNoise();
+            }
+
+            // Start the game
+            coreLogicManager.startGame();
+            gameStarted = true;
+            Log.d(TAG, "Game started");
+        }
+    }
+
+    /**
+     * End the game - either caught by monster or user quit
+     * @param caughtByMonster true if monster caught player, false if user quit
+     */
+    public void endGame(boolean caughtByMonster) {
+        if (gameEnded) return; // Already ended
+
+        gameEnded = true;
+        gameStarted = false;
+
+        // Stop all systems
+        if (coreLogicManager != null) {
+            coreLogicManager.stopGame();
+        }
+        if (hapticFeedbackManager != null) {
+            hapticFeedbackManager.stop();
+        }
+        if (audioManager != null) {
+            audioManager.stopWhiteNoise();
+        }
+
+        // Show game over screen
+        if (uiManager != null) {
+            uiManager.showGameOverScreen(caughtByMonster);
+        }
+
+        Log.d(TAG, "Game ended - " + (caughtByMonster ? "Caught by monster" : "User quit"));
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        if (coreLogicManager != null) {
+        // Only resume if game was already started
+        if (gameStarted && coreLogicManager != null) {
             coreLogicManager.resumeGame();
+            Log.d(TAG, "Game resumed");
         }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        // Don't pause the game - it needs to keep running when AR view is open
-        // to continue tracking movement and updating monster position
-        // if (coreLogicManager != null) {
-        //     coreLogicManager.pauseGame();
-        // }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (audioManager != null) {
+            audioManager.release();
+        }
+        if (hapticFeedbackManager != null) {
+            hapticFeedbackManager.release();
+        }
     }
 
     @Override
     public void onSpeedChanged(float speed) {
         if (uiManager != null) {
             uiManager.updateDevHudSpeed(speed);
+            uiManager.updateSpeedometer(speed);
         }
     }
 
@@ -88,7 +176,7 @@ public class MainActivity extends AppCompatActivity implements GameEventListener
     public void onPlayerDistanceChanged(float distance) {
         if (uiManager != null) {
             uiManager.updateDevHudPlayerDistance(distance);
-
+            uiManager.updateOdometer(distance);
         }
     }
 
@@ -96,18 +184,55 @@ public class MainActivity extends AppCompatActivity implements GameEventListener
     public void onPlayerDirectionChanged(Vector3 direction) {
         if (uiManager != null) {
             uiManager.updateDevHudDirection(direction);
+            uiManager.updateCompass(direction);
+
         }
     }
 
     @Override
     public void onMapPositionsChanged(Vector3 monsterPos, Vector3 playerOri, float monsterDistanceToPlayer) {
+        // Check if game is over
+        if (gameEnded) return;
+
+        // Check if monster caught the player
+        if (monsterDistanceToPlayer <= GAME_OVER_DISTANCE) {
+            endGame(true); // Caught by monster
+            return;
+        }
+
         if (uiManager != null) {
             uiManager.updateDevHudMapView(monsterPos, playerOri);
             uiManager.updateDevHudDistance(monsterDistanceToPlayer);
+
+            float signalStrength = uiManager.getSignalStrength();
+            if (coreLogicManager != null) {
+                coreLogicManager.setSignalStrength(signalStrength);
+
+                // Get monster enragement and pass to ProxSensor
+                if (coreLogicManager.getMonster() != null) {
+                    float enragement = coreLogicManager.getMonster().getEnragement();
+                    uiManager.updateProxSensorEnragement(enragement);
+                }
+            }
+
+            uiManager.updateProxSensor(monsterPos, playerOri);
+
+            // Update white noise audio based on monster position
+            if (audioManager != null) {
+                audioManager.updateWhiteNoise(monsterPos, playerOri, monsterDistanceToPlayer, signalStrength);
+
+                // Update audio level meter with current audio level
+                float audioLevel = audioManager.getCurrentAudioLevel();
+                uiManager.updateAudioLevelMeter(audioLevel);
+            }
+
+            // Update haptic feedback based on monster distance and signal strength
+            if (hapticFeedbackManager != null) {
+                hapticFeedbackManager.updateHaptics(monsterDistanceToPlayer, signalStrength);
+            }
         }
 
-        // Update AR view if it's active (pass both monster position and player orientation)
-        com.youcanrun.ar.ARActivity.updateMonster(monsterPos, playerOri);
+        ARActivity.updateMonster(monsterPos, playerOri);
     }
 
     public void SaveData(String key_one, String key_two, float data){

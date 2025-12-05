@@ -5,7 +5,6 @@ import android.opengl.Matrix;
 import android.util.Log;
 
 import com.google.ar.core.Camera;
-import com.google.ar.core.Pose;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -24,11 +23,10 @@ public class MonsterRenderer {
     private int positionHandle;
     private int colorHandle;
     private int mvpMatrixHandle;
-
-    private float[] modelMatrix = new float[16];
-    private float[] mvpMatrix = new float[16];
-    private float[] viewMatrix = new float[16];
-    private float[] projectionMatrix = new float[16];
+    private final float[] modelMatrix = new float[16];
+    private final float[] mvpMatrix = new float[16];
+    private final float[] viewMatrix = new float[16];
+    private final float[] projectionMatrix = new float[16];
 
     // Monster position in game world space (relative to player at origin)
     private float monsterWorldX = 0.0f;
@@ -36,7 +34,7 @@ public class MonsterRenderer {
     private float monsterWorldZ = -2.0f; // 2 meters behind player initially
 
     // Monster color (red/orange for heat signature)
-    private float[] monsterColor = new float[]{1.0f, 0.3f, 0.0f, 0.8f}; // Orange with some transparency
+    private final float[] monsterColor = new float[]{1.0f, 0.3f, 0.0f, 0.8f}; // Orange with some transparency
     private float pulseTime = 0.0f;
     private int frameCount = 0;
 
@@ -251,28 +249,11 @@ public class MonsterRenderer {
     }
 
     /**
-     * Set monster color (RGBA)
-     */
-    public void setColor(float r, float g, float b, float a) {
-        this.monsterColor[0] = r;
-        this.monsterColor[1] = g;
-        this.monsterColor[2] = b;
-        this.monsterColor[3] = a;
-    }
-
-    /**
      * Update monster position based on game logic
      */
     public void update(float deltaTime) {
         pulseTime += deltaTime;
         // Simple floating animation (disabled when using real position)
         // monsterY offset can be added here if needed
-    }
-
-    /**
-     * Get current distance from camera/player
-     */
-    public float getDistance() {
-        return (float)Math.sqrt(monsterWorldX * monsterWorldX + monsterWorldY * monsterWorldY + monsterWorldZ * monsterWorldZ);
     }
 }

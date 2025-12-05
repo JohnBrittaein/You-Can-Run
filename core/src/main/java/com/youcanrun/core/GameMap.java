@@ -12,8 +12,8 @@ import com.youcanrun.utils.Vector3;
  */
 public class GameMap {
     private static final String TAG = "GameMap";
-    private Monster monster;
-    private Vector3 bounds;
+    private final Monster monster;
+    private final Vector3 bounds;
 
     public GameMap(Vector3 bounds, Monster monster){
         this.bounds = bounds;
