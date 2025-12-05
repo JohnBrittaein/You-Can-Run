@@ -24,8 +24,7 @@ import javax.microedition.khronos.opengles.GL10;
  */
 public class ARRenderer implements GLSurfaceView.Renderer, SensorEventListener {
     private static final String TAG = "ARRenderer";
-
-    private CameraFragment fragment;
+    private final CameraFragment fragment;
     private Session arSession;
     private BackgroundRenderer backgroundRenderer;
     private MonsterRenderer monsterRenderer;
@@ -33,10 +32,10 @@ public class ARRenderer implements GLSurfaceView.Renderer, SensorEventListener {
     private int frameCount = 0;
 
     // Device orientation tracking (yaw, pitch, roll)
-    private SensorManager sensorManager;
-    private Sensor rotationSensor;
-    private float[] deviceOrientation = new float[3]; // [yaw, pitch, roll]
-    private float[] rotMatrix = new float[9];
+    private final SensorManager sensorManager;
+    private final Sensor rotationSensor;
+    private final float[] deviceOrientation = new float[3]; // [yaw, pitch, roll]
+    private final float[] rotMatrix = new float[9];
 
     public ARRenderer(CameraFragment fragment) {
         this.fragment = fragment;
@@ -175,17 +174,6 @@ public class ARRenderer implements GLSurfaceView.Renderer, SensorEventListener {
         if (backgroundRenderer != null) {
             backgroundRenderer.setFilter(filter);
         }
-    }
-
-    public CameraFilter getCurrentFilter() {
-        return backgroundRenderer != null ? backgroundRenderer.getCurrentFilter() : CameraFilter.NORMAL;
-    }
-
-    /**
-     * Get the monster renderer for game logic integration
-     */
-    public MonsterRenderer getMonsterRenderer() {
-        return monsterRenderer;
     }
 
     /**

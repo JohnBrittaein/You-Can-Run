@@ -17,14 +17,12 @@ import com.youcanrun.utils.Vector3;
  */
 public class MotionTracker implements SensorEventListener {
     private static final String TAG = "MotionTracker";
-    private Context context;
 
     // TODO: Tune Accelerometer and include GPS for hybrid motion tracking
-    private SensorManager mSensorManager;
-    private Sensor mAccelerometer;
-    private Sensor mRotationVector;
-    private Vector3 playerDirection = new Vector3(0,0,1);
-    private float[] rotMatrix = new float[9];
+    private final SensorManager mSensorManager;
+    private final Sensor mAccelerometer;
+    private final Sensor mRotationVector;
+    private final float[] rotMatrix = new float[9];
     private float currentSpeed;
     private float currentDistance;
 
@@ -35,7 +33,6 @@ public class MotionTracker implements SensorEventListener {
      * @param context
      */
     public MotionTracker(Context context) {
-        this.context = context;
         mSensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
         mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
         mRotationVector = mSensorManager.getDefaultSensor(Sensor.TYPE_GAME_ROTATION_VECTOR);
@@ -44,16 +41,7 @@ public class MotionTracker implements SensorEventListener {
 
     private float vX, vY, vZ;
     private long lastTimeStamp = -1;
-    private final float alpha = 0.8f; // Smoothing factor, lowering this will make the speed more responsive
-    private final float intervalSeconds = 0.2f; // increasing this will improve consistency but decrease responsiveness
     private float intervalTimeAccum = 0f; // accumulates dt
-
-    private float distanceTolarence = 0.001f;
-
-    //use this for the odometer - displays the distance travelled.
-    public float getCurrentDistance(){
-        return currentDistance;
-    }
 
     @Override
     public void onSensorChanged(SensorEvent event) {
@@ -80,13 +68,18 @@ public class MotionTracker implements SensorEventListener {
 
             float rawDistanceAtMoment = (float) Math.sqrt((vX*dt)*(vX*dt)+(vY*dt)*(vY*dt)+(vZ*dt)*(vZ*dt));
 
+            float distanceTolarence = 0.001f;
             if(rawDistanceAtMoment > distanceTolarence && motionListener != null) {
                 currentDistance = currentDistance + rawDistanceAtMoment;
                 // Notify listener
                 motionListener.onPlayerDistanceUpdated(currentDistance);
             }
+            // increasing this will improve consistency but decrease responsiveness
+            float intervalSeconds = 0.2f;
             if (intervalTimeAccum >= intervalSeconds) {
                 // Smooth speed
+                // Smoothing factor, lowering this will make the speed more responsive
+                float alpha = 0.8f;
                 currentSpeed = alpha * currentSpeed + (1 - alpha) * rawSpeed;
 
                 // Notify listener
@@ -113,7 +106,7 @@ public class MotionTracker implements SensorEventListener {
 
             float yaw = orientation[0]; // rotation around Y axis
             // Forward vector in XZ plane
-            playerDirection = new Vector3((float) Math.sin(yaw), 0f, (float) Math.cos(yaw));
+            Vector3 playerDirection = new Vector3((float) Math.sin(yaw), 0f, (float) Math.cos(yaw));
 
             if (motionListener != null) {
                 motionListener.onPlayerDirectionUpdated(playerDirection);
@@ -142,15 +135,6 @@ public class MotionTracker implements SensorEventListener {
     public void stopTracking(){
         mSensorManager.unregisterListener(this);
         Log.d(TAG, "MotionTracker stopped");
-    }
-
-    /**
-     * Gets the current speed of the player
-     * @return The current speed in meters/second
-     */
-    public double getCurrentSpeed(){
-        Log.d(TAG, "Current speed: " + currentSpeed);
-        return currentSpeed;
     }
 
     // Create SpeedListener
