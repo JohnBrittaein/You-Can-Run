@@ -134,6 +134,13 @@ public class UIManager {
         Activity activity = (Activity) context;
 
         ViewGroup root = activity.findViewById(android.R.id.content);
+
+        // Remove old HUD if it exists
+        if (hud != null && hud.getParent() != null) {
+            ((ViewGroup)hud.getParent()).removeView(hud);
+            Log.d(TAG, "Removed old HUD");
+        }
+
         hud = LayoutInflater.from(context).inflate(R.layout.hud, root, false);
 
         // Add it on top of existing layout
@@ -208,6 +215,13 @@ public class UIManager {
         Activity activity = (Activity) context;
 
         ViewGroup root = activity.findViewById(android.R.id.content);
+
+        // Remove old dev HUD if it exists
+        if (devHud != null && devHud.getParent() != null) {
+            ((ViewGroup)devHud.getParent()).removeView(devHud);
+            Log.d(TAG, "Removed old dev HUD");
+        }
+
         devHud = LayoutInflater.from(context).inflate(R.layout.dev_hud, root, false);
 
         // Add it on top of existing layout
@@ -461,18 +475,16 @@ public class UIManager {
                 TextView hLonRun = endGameScreen.findViewById(R.id.HLonRun);
                 TextView hTopSpeed = endGameScreen.findViewById(R.id.HTopSpeed);
 
-                // Current Scores
-                TextView totDisRan = endGameScreen.findViewById(R.id.TotDisRan);
+                // Current Run Scores
                 TextView lonRun = endGameScreen.findViewById(R.id.LonRun);
                 TextView topSpeed = endGameScreen.findViewById(R.id.TopSpeed);
 
                 // Format and display high scores
-                hTotDisRan.setText(String.format("Total Distance Ran: %.2f m", stats.totalDistance));
+                hTotDisRan.setText(String.format("Total Distance: %.2f m", stats.totalDistance));
                 hLonRun.setText(String.format("Longest Run: %.2f m", stats.highscoreDistance));
                 hTopSpeed.setText(String.format("Top Speed: %.2f m/s", stats.highscoreTopSpeed));
 
-                // Format and display current game scores
-                totDisRan.setText(String.format("Total Distance Ran: %.2f m", stats.totalDistance));
+                // Format and display current run scores
                 lonRun.setText(String.format("Distance: %.2f m", stats.currentDistance));
                 topSpeed.setText(String.format("Top Speed: %.2f m/s", stats.currentTopSpeed));
             }

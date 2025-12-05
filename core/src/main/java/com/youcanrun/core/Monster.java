@@ -30,7 +30,7 @@ public class Monster {
                         position.y * position.y +
                         position.z * position.z
         );
-        this.baseSpeed = 1.0f;
+        this.baseSpeed = 0.75f;
         this.enragement = 1.0f;
         Log.d(TAG,"Monster created");
     }

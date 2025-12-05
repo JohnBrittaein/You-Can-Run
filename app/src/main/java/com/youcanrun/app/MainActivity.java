@@ -121,9 +121,6 @@ public class MainActivity extends AppCompatActivity implements GameEventListener
         gameStarted = false;
 
         // Stop all systems
-        if (coreLogicManager != null) {
-            coreLogicManager.stopGame();
-        }
         if (hapticFeedbackManager != null) {
             hapticFeedbackManager.stop();
         }
@@ -131,9 +128,10 @@ public class MainActivity extends AppCompatActivity implements GameEventListener
             audioManager.stopWhiteNoise();
         }
 
-        // Get game stats
+        // End the game and save high scores
         GameStats stats = null;
         if (coreLogicManager != null) {
+            coreLogicManager.endGame(); // This saves high scores and stops the game
             stats = coreLogicManager.getGameStats();
         }
 

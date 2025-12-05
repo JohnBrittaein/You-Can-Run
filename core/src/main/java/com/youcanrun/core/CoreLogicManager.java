@@ -2,7 +2,6 @@ package com.youcanrun.core;
 
 import android.content.Context;
 import android.util.Log;
-import android.view.DragAndDropPermissions;
 
 import com.youcanrun.sensors.MotionTracker;
 import com.youcanrun.sensors.MotionListener;
@@ -22,19 +21,12 @@ public class CoreLogicManager implements MotionListener {
     // TODO: Implement GameEventListener
     private final MotionTracker motionTracker;
     private GameEventListener mGameEventListener;
-
-
-    // Game State Constants
-
-    // Game State Variables
     private GameMap gameMap;
     private Vector3 playerDirection;
     private DataManager dataManager;
     private float playerSpeed;
     private float signalStrength = 0.5f;
-
     private float playerDistance;
-
     private float playerTopSpeed;
     private long lastUpdatedTime;
 
@@ -227,6 +219,9 @@ public class CoreLogicManager implements MotionListener {
         playerTopSpeed = 0f;
         signalStrength = 0.5f;
 
+        // Reset motion tracker - clears accumulated distance and speed
+        motionTracker.reset();
+
         // Reinitialize monster and map with random spawn position
         Vector3 spawnPos = genSpawnPosition();
         Monster monster = new Monster(spawnPos);
@@ -242,22 +237,23 @@ public class CoreLogicManager implements MotionListener {
      * player has either quit or has lost the game
      */
     public void endGame(){
+        // Save current game distance before resetting
+        float currentGameDistance = playerDistance;
+        float currentGameTopSpeed = playerTopSpeed;
+
         //updates new highscores
-        if(dataManager.loadData("HighScore", "Distance") < playerDistance){
-            //update new highscore
-            dataManager.saveData("HighScore", "Distance", playerDistance);
+        if(dataManager.loadData("HighScore", "Distance") < currentGameDistance){
+            dataManager.saveData("HighScore", "Distance", currentGameDistance);
         }
-        if(playerTopSpeed > dataManager.loadData("HighScore", "TopSpeed")){
-            dataManager.saveData("HighScore", "TopSpeed", playerTopSpeed);
+        if(currentGameTopSpeed > dataManager.loadData("HighScore", "TopSpeed")){
+            dataManager.saveData("HighScore", "TopSpeed", currentGameTopSpeed);
         }
 
-        float highscoreDistance = dataManager.loadData("HighScore", "Distance");
-        float currentDistance = playerDistance;
-        float totalDistanceRan = dataManager.loadData("HighScore", "TotalDistance") + playerDistance;
-        float highscoreTopSpeed = dataManager.loadData("HighScore", "TopSpeed");
-        //player top speed
-
+        // Update total distance across all games
+        float totalDistanceRan = dataManager.loadData("HighScore", "TotalDistance") + currentGameDistance;
         dataManager.saveData("HighScore", "TotalDistance", totalDistanceRan);
+
+        Log.d(TAG, String.format("Game ended - Distance: %.2fm, Total: %.2fm", currentGameDistance, totalDistanceRan));
 
         //end game logic
         stopGame();
