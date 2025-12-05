@@ -174,6 +174,9 @@ public class ARRenderer implements GLSurfaceView.Renderer, SensorEventListener {
         if (backgroundRenderer != null) {
             backgroundRenderer.setFilter(filter);
         }
+        if (monsterRenderer != null) {
+            monsterRenderer.setFilter(filter);
+        }
     }
 
     /**

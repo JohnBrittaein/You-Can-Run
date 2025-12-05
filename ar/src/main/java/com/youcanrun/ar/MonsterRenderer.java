@@ -16,7 +16,6 @@ import java.nio.ShortBuffer;
  */
 public class MonsterRenderer {
     private static final String TAG = "MonsterRenderer";
-
     private FloatBuffer vertexBuffer;
     private ShortBuffer indexBuffer;
     private int shaderProgram;
@@ -32,9 +31,7 @@ public class MonsterRenderer {
     private float monsterWorldX = 0.0f;
     private float monsterWorldY = 0.0f;
     private float monsterWorldZ = -2.0f; // 2 meters behind player initially
-
-    // Monster color (red/orange for heat signature)
-    private final float[] monsterColor = new float[]{1.0f, 0.3f, 0.0f, 0.8f}; // Orange with some transparency
+    private CameraFilter currentFilter = CameraFilter.NORMAL;
     private float pulseTime = 0.0f;
     private int frameCount = 0;
 
@@ -212,12 +209,22 @@ public class MonsterRenderer {
         // Use shader program
         GLES20.glUseProgram(shaderProgram);
 
-        // Add pulsing effect to color
-        float pulse = 0.5f + 0.5f * (float)Math.sin(pulseTime * 3.0);
+        // Set monster color based on camera filter mode
+        float[] monsterColor;
+        if (currentFilter == CameraFilter.EDGE_DETECT) {
+            // Pure white in edge detection
+            monsterColor = new float[]{1.0f, 1.0f, 1.0f, 1.0f};
+        } else {
+            // Pure black, dead pixel
+            monsterColor = new float[]{0.0f, 0.0f, 0.0f, 1.0f};
+        }
+
+        // Subtle pulsing
+        float pulse = 0.5f + 0.5f * (float)Math.sin(pulseTime * 2.0);
         float[] animatedColor = new float[]{
-            monsterColor[0] * (0.7f + 0.3f * pulse),
-            monsterColor[1] * (0.7f + 0.3f * pulse),
-            monsterColor[2] * (0.7f + 0.3f * pulse),
+            monsterColor[0] * (0.85f + 0.15f * pulse),
+            monsterColor[1] * (0.85f + 0.15f * pulse),
+            monsterColor[2] * (0.85f + 0.15f * pulse),
             monsterColor[3]
         };
 
@@ -255,5 +262,13 @@ public class MonsterRenderer {
         pulseTime += deltaTime;
         // Simple floating animation (disabled when using real position)
         // monsterY offset can be added here if needed
+    }
+
+    /**
+     * Set the camera filter mode to adjust monster appearance
+     */
+    public void setFilter(CameraFilter filter) {
+        this.currentFilter = filter;
+        Log.d(TAG, "Monster appearance updated for filter: " + filter);
     }
 }

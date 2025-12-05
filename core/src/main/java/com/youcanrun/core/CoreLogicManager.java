@@ -21,19 +21,12 @@ public class CoreLogicManager implements MotionListener {
     // TODO: Implement GameEventListener
     private final MotionTracker motionTracker;
     private GameEventListener mGameEventListener;
-
-
-    // Game State Constants
-
-    // Game State Variables
     private GameMap gameMap;
     private Vector3 playerDirection;
     private DataManager dataManager;
     private float playerSpeed;
     private float signalStrength = 0.5f;
-
     private float playerDistance;
-
     private float playerTopSpeed;
     private long lastUpdatedTime;
 
@@ -43,7 +36,7 @@ public class CoreLogicManager implements MotionListener {
         motionTracker.setMotionListener(this);
 
         // Initialize monster,map other game related components
-        Vector3 spawnPos = new Vector3(100,100,100); //TODO: maybe implement a randomized edge spawning function
+        Vector3 spawnPos = genSpawnPosition();
         Monster monster = new Monster(spawnPos);
         gameMap = new GameMap(spawnPos, monster);
 
@@ -52,6 +45,49 @@ public class CoreLogicManager implements MotionListener {
         lastUpdatedTime = System.currentTimeMillis();
 
         Log.d(TAG,"CoreLogicManager initialized");
+    }
+
+    /**
+     * Generate a random spawn position in one of the four corners of the map
+     * @return Vector3 spawn position in world coordinates
+     */
+    private Vector3 genSpawnPosition(){
+        // Map boundaries - spawn at corners with distance from origin
+        float spawnDistance = 100.0f; // 100 meters from origin
+        float yHeight = 100.0f; // Fixed height
+
+        // Randomly select one of four corners (0-3)
+        int corner = (int)(Math.random() * 4);
+
+        float x, z;
+        switch(corner) {
+            case 0: // Northeast corner
+                x = spawnDistance;
+                z = spawnDistance;
+                Log.d(TAG, "Monster spawning at NORTHEAST corner");
+                break;
+            case 1: // Northwest corner
+                x = -spawnDistance;
+                z = spawnDistance;
+                Log.d(TAG, "Monster spawning at NORTHWEST corner");
+                break;
+            case 2: // Southeast corner
+                x = spawnDistance;
+                z = -spawnDistance;
+                Log.d(TAG, "Monster spawning at SOUTHEAST corner");
+                break;
+            case 3: // Southwest corner
+                x = -spawnDistance;
+                z = -spawnDistance;
+                Log.d(TAG, "Monster spawning at SOUTHWEST corner");
+                break;
+            default:
+                x = spawnDistance;
+                z = spawnDistance;
+                break;
+        }
+
+        return new Vector3(x, yHeight, z);
     }
 
     public void setGameEventListener(GameEventListener listener) {
@@ -183,8 +219,11 @@ public class CoreLogicManager implements MotionListener {
         playerTopSpeed = 0f;
         signalStrength = 0.5f;
 
-        // Reinitialize monster and map
-        Vector3 spawnPos = new Vector3(100, 100, 100);
+        // Reset motion tracker - clears accumulated distance and speed
+        motionTracker.reset();
+
+        // Reinitialize monster and map with random spawn position
+        Vector3 spawnPos = genSpawnPosition();
         Monster monster = new Monster(spawnPos);
         gameMap = new GameMap(spawnPos, monster);
 
@@ -198,22 +237,23 @@ public class CoreLogicManager implements MotionListener {
      * player has either quit or has lost the game
      */
     public void endGame(){
+        // Save current game distance before resetting
+        float currentGameDistance = playerDistance;
+        float currentGameTopSpeed = playerTopSpeed;
+
         //updates new highscores
-        if(dataManager.loadData("HighScore", "Distance") < playerDistance){
-            //update new highscore
-            dataManager.saveData("HighScore", "Distance", playerDistance);
+        if(dataManager.loadData("HighScore", "Distance") < currentGameDistance){
+            dataManager.saveData("HighScore", "Distance", currentGameDistance);
         }
-        if(playerTopSpeed > dataManager.loadData("HighScore", "TopSpeed")){
-            dataManager.saveData("HighScore", "TopSpeed", playerTopSpeed);
+        if(currentGameTopSpeed > dataManager.loadData("HighScore", "TopSpeed")){
+            dataManager.saveData("HighScore", "TopSpeed", currentGameTopSpeed);
         }
 
-        float highscoreDistance = dataManager.loadData("HighScore", "Distance");
-        float currentDistance = playerDistance;
-        float totalDistanceRan = dataManager.loadData("HighScore", "TotalDistance") + playerDistance;
-        float highscoreTopSpeed = dataManager.loadData("HighScore", "TopSpeed");
-        //player top speed
-
+        // Update total distance across all games
+        float totalDistanceRan = dataManager.loadData("HighScore", "TotalDistance") + currentGameDistance;
         dataManager.saveData("HighScore", "TotalDistance", totalDistanceRan);
+
+        Log.d(TAG, String.format("Game ended - Distance: %.2fm, Total: %.2fm", currentGameDistance, totalDistanceRan));
 
         //end game logic
         stopGame();

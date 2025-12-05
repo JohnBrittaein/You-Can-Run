@@ -137,6 +137,21 @@ public class MotionTracker implements SensorEventListener {
         Log.d(TAG, "MotionTracker stopped");
     }
 
+    /**
+     * Resets all tracked motion data to zero
+     * Call this when starting a new game
+     */
+    public void reset() {
+        currentSpeed = 0f;
+        currentDistance = 0f;
+        vX = 0f;
+        vY = 0f;
+        vZ = 0f;
+        lastTimeStamp = -1;
+        intervalTimeAccum = 0f;
+        Log.d(TAG, "MotionTracker reset - distance and speed cleared");
+    }
+
     // Create SpeedListener
     private MotionListener motionListener;
 
