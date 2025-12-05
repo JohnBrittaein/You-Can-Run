@@ -18,7 +18,7 @@ public class CoreLogicManager implements MotionListener {
     private static final String TAG = "CoreLogicManager";
 
     // TODO: Implement GameEventListener
-    private MotionTracker motionTracker;
+    private final MotionTracker motionTracker;
     private GameEventListener mGameEventListener;
 
 
@@ -30,7 +30,6 @@ public class CoreLogicManager implements MotionListener {
     private float playerSpeed;
     private float signalStrength = 0.5f;
 
-    private float playerDistance;
     private long lastUpdatedTime;
 
     public CoreLogicManager(Context context) {
@@ -39,8 +38,7 @@ public class CoreLogicManager implements MotionListener {
         motionTracker.setMotionListener(this);
 
         // Initialize monster,map other game related components
-        Vector3 bounds = new Vector3(100,100,100);
-        Vector3 spawnPos = bounds; //TODO: maybe implement a randomized edge spawning function
+        Vector3 spawnPos = new Vector3(100,100,100); //TODO: maybe implement a randomized edge spawning function
         Monster monster = new Monster(spawnPos);
         gameMap = new GameMap(spawnPos, monster);
 
@@ -102,6 +100,10 @@ public class CoreLogicManager implements MotionListener {
             Vector3 monsterPos = gameMap.getMonster().getPosition();
             Vector3 playerOri = playerDirection;
             float monsterDistanceToPlayer = gameMap.getMonster().getDistanceToPlayer();
+
+            if (monsterDistanceToPlayer < 0){
+                endGame();
+            }
             if (monsterPos != null && mGameEventListener != null){
                 mGameEventListener.onMapPositionsChanged(monsterPos, playerOri, monsterDistanceToPlayer);
             }
@@ -154,14 +156,29 @@ public class CoreLogicManager implements MotionListener {
         stopGameLoop();
     }
 
-    public void pauseGame(){
-        motionTracker.stopTracking();
-        stopGameLoop();
-    }
-
     public void resumeGame() {
         motionTracker.startTracking();
         startGameLoop();
+    }
+
+    /**
+     * Reset all game state variables for a new game
+     */
+    public void resetGame() {
+        // Reset player state
+        playerDirection = null;
+        playerSpeed = 0f;
+        signalStrength = 0.5f;
+
+        // Reinitialize monster and map
+        Vector3 spawnPos = new Vector3(100, 100, 100);
+        Monster monster = new Monster(spawnPos);
+        gameMap = new GameMap(spawnPos, monster);
+
+        // Reset timing
+        lastUpdatedTime = System.currentTimeMillis();
+
+        Log.d(TAG, "Game state reset - ready for new game");
     }
 
     /**
@@ -170,5 +187,8 @@ public class CoreLogicManager implements MotionListener {
     public void endGame(){
         // Show/saves scores
         //end game logic
+        stopGame();
+
+        // Save score
     }
 }

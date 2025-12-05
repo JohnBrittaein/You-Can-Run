@@ -12,7 +12,6 @@ import androidx.fragment.app.Fragment;
  */
 public class ARActivity extends AppCompatActivity {
     private static final String TAG = "ARActivity";
-
     private CameraFragment cameraFragment;
     private TextView currentFilterText;
 
@@ -87,9 +86,8 @@ public class ARActivity extends AppCompatActivity {
     /**
      * Update monster position from game logic (called by MainActivity)
      * @param monsterPos Monster position in world-space (relative to player at origin)
-     * @param playerDir Player direction vector (not used - camera pose handles rotation)
      */
-    public void updateMonsterPosition(com.youcanrun.utils.Vector3 monsterPos, com.youcanrun.utils.Vector3 playerDir) {
+    public void updateMonsterPosition(com.youcanrun.utils.Vector3 monsterPos) {
         Log.d(TAG, "updateMonsterPosition called, cameraFragment=" + (cameraFragment != null) +
             ", renderer=" + (cameraFragment != null ? (cameraFragment.getRenderer() != null) : "N/A"));
 
@@ -115,7 +113,7 @@ public class ARActivity extends AppCompatActivity {
         // Capture instance in local variable to avoid race condition
         ARActivity activity = instance;
         if (activity != null) {
-            activity.runOnUiThread(() -> activity.updateMonsterPosition(monsterPos, playerDir));
+            activity.runOnUiThread(() -> activity.updateMonsterPosition(monsterPos));
         }
         // If instance is null, AR view is not open - silently ignore
     }

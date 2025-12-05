@@ -15,16 +15,16 @@ import java.util.Random;
  * - UI click sounds (random selection from 7 variants)
  * - Ambient white noise with dynamic volume and stereo panning based on monster position
  *
- * @date 11-07-2025
+ * @date 12-04-2025
  */
 public class AudioManager {
     private static final String TAG = "AudioManager";
-    private Context context;
+    private final Context context;
 
     // SoundPool for short UI click sounds
     private SoundPool soundPool;
     private int[] uiClickSounds;
-    private Random random;
+    private final Random random;
     private boolean soundsLoaded = false;
     private int loadedCount = 0;
 
@@ -65,19 +65,16 @@ public class AudioManager {
                 .build();
 
         // Set load complete listener
-        soundPool.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
-            @Override
-            public void onLoadComplete(SoundPool soundPool, int sampleId, int status) {
-                if (status == 0) {
-                    loadedCount++;
-                    Log.d(TAG, "Sound loaded successfully: " + sampleId + " (" + loadedCount + "/7)");
-                    if (loadedCount == 7) {
-                        soundsLoaded = true;
-                        Log.d(TAG, "All UI sounds loaded!");
-                    }
-                } else {
-                    Log.e(TAG, "Failed to load sound: " + sampleId);
+        soundPool.setOnLoadCompleteListener((soundPool, sampleId, status) -> {
+            if (status == 0) {
+                loadedCount++;
+                Log.d(TAG, "Sound loaded successfully: " + sampleId + " (" + loadedCount + "/7)");
+                if (loadedCount == 7) {
+                    soundsLoaded = true;
+                    Log.d(TAG, "All UI sounds loaded!");
                 }
+            } else {
+                Log.e(TAG, "Failed to load sound: " + sampleId);
             }
         });
 

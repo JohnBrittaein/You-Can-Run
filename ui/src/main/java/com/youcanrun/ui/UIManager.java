@@ -18,26 +18,23 @@ import com.youcanrun.utils.Vector3;
  * within the app. It manages the HUD, sensor displays (compass, speedometer, etc.),
  * and handles user interactions like the camera button.
  *
- * @date 11-07-2025
+ * @date 12-04-2025
  */
 public class UIManager {
     private static final String TAG = "UIManager";
-    private Context context;
+    private final Context context;
     public OdometerView odometerView;
     public SpeedometerView speedometerView;
     public CompassView compassView;
     public ProxSensorView proxSensorView;
-    private int proxSensorTolerance = 2;
     private Button startBtn;
-    private ImageButton quitBtn;
-    private ImageButton cameraBtn;
     private boolean scanInit = false;
-    private OnCameraButtonClickListener cameraButtonListener;
     private float lastPlayerAngle = 0f;
     private SignalSliderView signalStrengthSlider;
     private SignalStrengthView signalStrengthView;
     private com.youcanrun.audio.AudioManager audioManager;
     private OnGameStartListener gameStartListener;
+    private OnGameEndListener gameEndListener;
 
 
     public interface OnCameraButtonClickListener {
@@ -48,20 +45,30 @@ public class UIManager {
         void onGameStarted();
     }
 
+    public interface OnGameEndListener {
+        void onGameEnded();
+    }
+
     public UIManager(Context context) {
         this.context = context;
         setStartMenuVisible();
-        showDHudBtn = startMenuView.findViewById(R.id.show_dev_hud_button);
+        setupStartMenuButtons();
+        Log.d(TAG, "UIManager initialized");
+    }
+
+    /**
+     * Setup start menu button listeners
+     * Called when start menu is shown (initially and after game over)
+     */
+    private void setupStartMenuButtons() {
+        Button showDHudBtn = startMenuView.findViewById(R.id.show_dev_hud_button);
         showDHudBtn.setOnClickListener(v -> {
             playClickSound();
             if (scanInit) {
-                if (devHud.getVisibility() != View.VISIBLE) {
-                    setDevHudVisible(true);
-                } else {
-                    setDevHudVisible(false);
-                }
+                setDevHudVisible(devHud.getVisibility() != View.VISIBLE);
             }
         });
+
         startBtn = startMenuView.findViewById(R.id.start_button);
         startBtn.setOnClickListener(v -> {
             playClickSound();
@@ -76,7 +83,6 @@ public class UIManager {
                 Log.d(TAG, "Game start triggered from start button");
             }
         });
-        Log.d(TAG, "UIManager initialized");
     }
 
     /**
@@ -93,6 +99,10 @@ public class UIManager {
         this.gameStartListener = listener;
     }
 
+    public void setOnGameEndListener(OnGameEndListener listener){
+        this.gameEndListener = listener;
+    }
+
     /**
      * Play UI click sound if AudioManager is available
      */
@@ -103,14 +113,6 @@ public class UIManager {
         } else {
             Log.w(TAG, "AudioManager is null, cannot play click sound");
         }
-    }
-
-    /**
-     * Set the camera button click listener
-     * This allows MainActivity to handle AR activity launch
-     */
-    public void setOnCameraButtonClickListener(OnCameraButtonClickListener listener) {
-        this.cameraButtonListener = listener;
     }
 
     /**
@@ -154,25 +156,28 @@ public class UIManager {
         // Reference SignalStrengthView (audio level meter)
         signalStrengthView = hud.findViewById(R.id.SignalStrengthView);
 
-        cameraBtn = hud.findViewById(R.id.camera_button);
+        ImageButton cameraBtn = hud.findViewById(R.id.camera_button);
         cameraBtn.setOnClickListener(v -> {
             playClickSound();
             // Launch AR Activity directly from UIManager
             launchARActivity();
         });
 
-        quitBtn = hud.findViewById(R.id.quit_button);
+        ImageButton quitBtn = hud.findViewById(R.id.quit_button);
         quitBtn.setOnClickListener(v -> {
             playClickSound();
-            // TODO: implement method when the game ends, or quits
-            // Send message to Quit the game
+            // Trigger game end listener
+            if (gameEndListener != null) {
+                gameEndListener.onGameEnded();
+                Log.d(TAG, "Quit button clicked - ending game");
+            }
         });
 
         Log.d(TAG,"Hud Initialized");
     }
     public void updateHud(){}
     private View startMenuView;
-    private Button showDHudBtn;
+
     public void setStartMenuVisible() {
         if (!(context instanceof Activity)) return;
         Activity activity = (Activity) context;
@@ -276,7 +281,8 @@ public class UIManager {
     public void updateProxSensor(final Vector3 mPos, final Vector3 pDir){
         if (proxSensorView != null && mPos != null) {
             float pDiff = proxSensorView.POStoAngle(pDir);
-            if( !( (pDiff < (lastPlayerAngle+proxSensorTolerance)) && (pDiff > (lastPlayerAngle-proxSensorTolerance))) ) {
+            int proxSensorTolerance = 2;
+            if( !( (pDiff < (lastPlayerAngle+ proxSensorTolerance)) && (pDiff > (lastPlayerAngle- proxSensorTolerance))) ) {
                 proxSensorView.updateProxSensor(mPos, pDir);
 
                 if (signalStrengthSlider != null) {
@@ -358,5 +364,92 @@ public class UIManager {
                 devHud.setVisibility(visible ? View.VISIBLE : View.GONE);
             });
         }
+    }
+
+    /**
+     * Reset all UI displays to initial values
+     */
+    public void resetUIDisplays() {
+        if (!(context instanceof Activity)) return;
+        Activity activity = (Activity) context;
+
+        activity.runOnUiThread(() -> {
+            // Reset odometer
+            if (odometerView != null) {
+                odometerView.setDistance(0f);
+            }
+
+            // Reset speedometer
+            if (speedometerView != null) {
+                speedometerView.setSpeed(0f);
+            }
+
+            // Reset compass
+            if (compassView != null) {
+                compassView.setCompassDirection(new Vector3(0, 0, 0));
+            }
+
+            // Reset prox sensor
+            if (proxSensorView != null) {
+                proxSensorView.updateProxSensor(new Vector3(100, 100, 100), new Vector3(0, 0, 0));
+                proxSensorView.setEnragement(1.0f);
+            }
+
+            // Reset audio meter
+            if (signalStrengthView != null) {
+                signalStrengthView.setSignalStrength(0);
+            }
+
+            // Reset signal slider to middle
+            if (signalStrengthSlider != null) {
+                signalStrengthSlider.setFillFraction(0.5f);
+            }
+
+            // Reset dev HUD displays
+            if (devSpeedTextView != null) {
+                devSpeedTextView.setText("Speed: 0.00 m/s");
+            }
+            if (devDirectionTextView != null) {
+                devDirectionTextView.setText("Delta: X: 0.000, Y: 0.000, Z: 0.000");
+            }
+            if (devPlayerDistanceTextView != null) {
+                devPlayerDistanceTextView.setText("Player Distance: 0.00 m");
+            }
+            if (devDistanceTextView != null) {
+                devDistanceTextView.setText("Distance: 0.00 m");
+            }
+
+            Log.d(TAG, "UI displays reset");
+        });
+    }
+
+    /**
+     * Show game over screen - returns to start menu
+     * @param caughtByMonster true if caught by monster, false if user quit
+     */
+    public void showGameOverScreen(boolean caughtByMonster) {
+        if (!(context instanceof Activity)) return;
+        Activity activity = (Activity) context;
+
+        activity.runOnUiThread(() -> {
+            // Hide HUD
+            if (hud != null) {
+                hud.setVisibility(View.GONE);
+            }
+            if (devHud != null) {
+                devHud.setVisibility(View.GONE);
+            }
+
+            // Show start menu again
+            setStartMenuVisible();
+
+            // Re-setup button listeners for the new view
+            setupStartMenuButtons();
+
+            // Reset scan
+            scanInit = false;
+
+            Log.d(TAG, "Game over - returned to start menu - " + (caughtByMonster ? "Caught" : "Quit"));
+        });
     }
 }

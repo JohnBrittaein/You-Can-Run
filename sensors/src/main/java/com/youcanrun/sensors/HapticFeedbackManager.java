@@ -20,7 +20,7 @@ import android.util.Log;
 public class HapticFeedbackManager {
     private static final String TAG = "HapticFeedbackManager";
 
-    private Context context;
+    private final Context context;
     private Vibrator vibrator;
     private CameraManager cameraManager;
     private String cameraId;
