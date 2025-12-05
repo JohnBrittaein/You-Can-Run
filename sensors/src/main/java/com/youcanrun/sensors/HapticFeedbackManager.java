@@ -46,7 +46,7 @@ public class HapticFeedbackManager {
      */
     private void initVibrator() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            VibratorManager vibratorManager = (VibratorManager) context.getSystemService(Context.VIBRATOR_SERVICE);
+            VibratorManager vibratorManager = (VibratorManager) context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE);
             if (vibratorManager != null) {
                 vibrator = vibratorManager.getDefaultVibrator();
             }
