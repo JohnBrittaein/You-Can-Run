@@ -77,6 +77,7 @@ public class UIManager {
             initDevHud();
             scanInit = true;
             startBtn.setVisibility(View.GONE);
+            setDevHudVisible(false);
 
             // Start the game
             if (gameStartListener != null) {
@@ -183,7 +184,6 @@ public class UIManager {
 
         Log.d(TAG,"Hud Initialized");
     }
-    public void updateHud(){}
     private View startMenuView;
 
     public void setStartMenuVisible() {
