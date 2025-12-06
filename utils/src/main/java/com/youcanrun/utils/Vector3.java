@@ -23,11 +23,4 @@ public class Vector3 {
         float len = length();
         return len > 0 ? scale(1f / len) : new Vector3(0, 0, 0);
     }
-    public Vector3 lerp(Vector3 target, float t) {
-        return new Vector3(
-                x + (target.x - x) * t,
-                y + (target.y - y) * t,
-                z + (target.z - z) * t
-        );
-    }
 }
