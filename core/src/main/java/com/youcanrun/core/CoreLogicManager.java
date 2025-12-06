@@ -12,13 +12,9 @@ import com.youcanrun.utils.DataManager;
  * CoreLogicManager interprets data passed to it from other modules
  * and handles all game logic, but does not contain audio/visual or
  * tactile components.
- *
- * @date 11-07-2025
  */
 public class CoreLogicManager implements MotionListener {
     private static final String TAG = "CoreLogicManager";
-
-    // TODO: Implement GameEventListener
     private final MotionTracker motionTracker;
     private GameEventListener mGameEventListener;
     private GameMap gameMap;
@@ -31,11 +27,9 @@ public class CoreLogicManager implements MotionListener {
     private long lastUpdatedTime;
 
     public CoreLogicManager(Context context) {
-        // Initialize motion tracker and related listeners
         motionTracker = new MotionTracker(context);
         motionTracker.setMotionListener(this);
 
-        // Initialize monster,map other game related components
         Vector3 spawnPos = genSpawnPosition();
         Monster monster = new Monster(spawnPos);
         gameMap = new GameMap(spawnPos, monster);
@@ -44,46 +38,31 @@ public class CoreLogicManager implements MotionListener {
         dataManager.setContext(context);
         lastUpdatedTime = System.currentTimeMillis();
 
-        Log.d(TAG,"CoreLogicManager initialized");
+        Log.d(TAG, "CoreLogicManager initialized");
     }
 
-    /**
-     * Generate a random spawn position in one of the four corners of the map
-     * @return Vector3 spawn position in world coordinates
-     */
-    private Vector3 genSpawnPosition(){
-        // Map boundaries - spawn at corners with distance from origin
-        float spawnDistance = 100.0f; // 100 meters from origin
-        float yHeight = 100.0f; // Fixed height
-
-        // Randomly select one of four corners (0-3)
-        int corner = (int)(Math.random() * 4);
+    private Vector3 genSpawnPosition() {
+        float spawnDistance = 100.0f;
+        float yHeight = 100.0f;
+        int corner = (int) (Math.random() * 4);
 
         float x, z;
-        switch(corner) {
-            case 0: // Northeast corner
+        switch (corner) {
+            case 0:
                 x = spawnDistance;
                 z = spawnDistance;
-                Log.d(TAG, "Monster spawning at NORTHEAST corner");
                 break;
-            case 1: // Northwest corner
+            case 1:
                 x = -spawnDistance;
                 z = spawnDistance;
-                Log.d(TAG, "Monster spawning at NORTHWEST corner");
                 break;
-            case 2: // Southeast corner
+            case 2:
                 x = spawnDistance;
                 z = -spawnDistance;
-                Log.d(TAG, "Monster spawning at SOUTHEAST corner");
-                break;
-            case 3: // Southwest corner
-                x = -spawnDistance;
-                z = -spawnDistance;
-                Log.d(TAG, "Monster spawning at SOUTHWEST corner");
                 break;
             default:
-                x = spawnDistance;
-                z = spawnDistance;
+                x = -spawnDistance;
+                z = -spawnDistance;
                 break;
         }
 
@@ -95,50 +74,39 @@ public class CoreLogicManager implements MotionListener {
     }
 
     @Override
-    public void onSpeedUpdated(float speed){
-        Log.d(TAG, "Speed updated: " + speed);
-
+    public void onSpeedUpdated(float speed) {
         playerSpeed = speed;
-        if (playerTopSpeed<speed){
+        if (playerTopSpeed < speed) {
             playerTopSpeed = speed;
         }
 
-        // This notifies the MainActivity that the speed has changed
-        if (mGameEventListener != null){
+        if (mGameEventListener != null) {
             mGameEventListener.onSpeedChanged(speed);
         }
     }
 
     @Override
-    public void onPlayerDistanceUpdated(float distance){
-        Log.d(TAG, "Distance Updated: " + distance);
-
+    public void onPlayerDistanceUpdated(float distance) {
         playerDistance = distance;
-        // This notifies the MainActivity that the distance has changed
-        if (mGameEventListener != null){
+        if (mGameEventListener != null) {
             mGameEventListener.onPlayerDistanceChanged(distance);
         }
     }
 
     @Override
     public void onPlayerDirectionUpdated(Vector3 direction) {
-        Log.d(TAG, "Player Delta updated: " + direction.x + " " + direction.y + " " + direction.z);
-
         playerDirection = direction;
-
-        // This notifies the MainActivity that player delta (orientation and speed) has changed
-        if (mGameEventListener != null){
+        if (mGameEventListener != null) {
             mGameEventListener.onPlayerDirectionChanged(direction);
         }
     }
 
-    // TODO: Implement methods for core game logic
-    public void updateGame(){
+    public void updateGame() {
         long currentTime = System.currentTimeMillis();
         float dt = (currentTime - lastUpdatedTime) / 1000f;
         lastUpdatedTime = currentTime;
 
-        if(gameMap != null && playerDirection != null){
+        if (gameMap != null && playerDirection != null) {
             float enragement = 1.0f + (signalStrength * 4.0f);
             gameMap.getMonster().setEnragement(enragement);
 
@@ -148,10 +116,7 @@ public class CoreLogicManager implements MotionListener {
             Vector3 playerOri = playerDirection;
             float monsterDistanceToPlayer = gameMap.getMonster().getDistanceToPlayer();
 
-            if (monsterDistanceToPlayer < 0){
-                endGame();
-            }
-            if (monsterPos != null && mGameEventListener != null){
+            if (monsterPos != null && mGameEventListener != null) {
                 mGameEventListener.onMapPositionsChanged(monsterPos, playerOri, monsterDistanceToPlayer);
             }
         }
@@ -168,37 +133,38 @@ public class CoreLogicManager implements MotionListener {
         return null;
     }
 
-    // Game start/stop and lifecycle controls
     private volatile boolean running = false;
     private Thread gameThread;
-    public void startGameLoop(){
+
+    public void startGameLoop() {
         running = true;
         gameThread = new Thread(() -> {
             while (running) {
-
                 updateGame();
-
                 try {
                     Thread.sleep(16);
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    Log.e(TAG, "Game loop interrupted", e);
+                    Thread.currentThread().interrupt();
                 }
             }
         });
         gameThread.start();
-        Log.d(TAG,"Started Game Loop");
+        Log.d(TAG, "Started game loop");
     }
-    public void stopGameLoop(){
+
+    public void stopGameLoop() {
         running = false;
         if (gameThread != null) gameThread.interrupt();
-        Log.d(TAG,"Stopped Game Loop");
+        Log.d(TAG, "Stopped game loop");
     }
-    public void startGame(){
+
+    public void startGame() {
         motionTracker.startTracking();
         startGameLoop();
     }
 
-    public void stopGame(){
+    public void stopGame() {
         motionTracker.stopTracking();
         stopGameLoop();
     }
@@ -208,60 +174,42 @@ public class CoreLogicManager implements MotionListener {
         startGameLoop();
     }
 
-    /**
-     * Reset all game state variables for a new game
-     */
     public void resetGame() {
-        // Reset player state
         playerDirection = null;
         playerSpeed = 0f;
         playerDistance = 0f;
         playerTopSpeed = 0f;
-        signalStrength = 0.5f;
 
-        // Reset motion tracker - clears accumulated distance and speed
         motionTracker.reset();
 
-        // Reinitialize monster and map with random spawn position
         Vector3 spawnPos = genSpawnPosition();
         Monster monster = new Monster(spawnPos);
         gameMap = new GameMap(spawnPos, monster);
 
-        // Reset timing
         lastUpdatedTime = System.currentTimeMillis();
 
-        Log.d(TAG, "Game state reset - ready for new game");
+        Log.d(TAG, "Game state reset");
     }
 
-    /**
-     * player has either quit or has lost the game
-     */
-    public void endGame(){
-        // Save current game distance before resetting
+    public void endGame() {
         float currentGameDistance = playerDistance;
         float currentGameTopSpeed = playerTopSpeed;
 
-        //updates new highscores
-        if(dataManager.loadData("HighScore", "Distance") < currentGameDistance){
+        if (dataManager.loadData("HighScore", "Distance") < currentGameDistance) {
             dataManager.saveData("HighScore", "Distance", currentGameDistance);
         }
-        if(currentGameTopSpeed > dataManager.loadData("HighScore", "TopSpeed")){
+        if (currentGameTopSpeed > dataManager.loadData("HighScore", "TopSpeed")) {
             dataManager.saveData("HighScore", "TopSpeed", currentGameTopSpeed);
         }
 
-        // Update total distance across all games
         float totalDistanceRan = dataManager.loadData("HighScore", "TotalDistance") + currentGameDistance;
         dataManager.saveData("HighScore", "TotalDistance", totalDistanceRan);
 
         Log.d(TAG, String.format("Game ended - Distance: %.2fm, Total: %.2fm", currentGameDistance, totalDistanceRan));
 
-        //end game logic
         stopGame();
     }
 
-    /**
-     * Get current game stats for display
-     */
     public GameStats getGameStats() {
         float highscoreDistance = dataManager.loadData("HighScore", "Distance");
         float totalDistance = dataManager.loadData("HighScore", "TotalDistance");
