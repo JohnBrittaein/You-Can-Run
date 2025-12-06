@@ -30,6 +30,7 @@ public class CoreLogicManager implements MotionListener {
         motionTracker = new MotionTracker(context);
         motionTracker.setMotionListener(this);
 
+        // Initialize monster,map other game related components
         Vector3 spawnPos = genSpawnPosition();
         Monster monster = new Monster(spawnPos);
         gameMap = new GameMap(spawnPos, monster);
@@ -63,6 +64,49 @@ public class CoreLogicManager implements MotionListener {
             default:
                 x = -spawnDistance;
                 z = -spawnDistance;
+                break;
+        }
+
+        return new Vector3(x, yHeight, z);
+    }
+
+    /**
+     * Generate a random spawn position in one of the four corners of the map
+     * @return Vector3 spawn position in world coordinates
+     */
+    private Vector3 genSpawnPosition(){
+        // Map boundaries - spawn at corners with distance from origin
+        float spawnDistance = 100.0f; // 100 meters from origin
+        float yHeight = 100.0f; // Fixed height
+
+        // Randomly select one of four corners (0-3)
+        int corner = (int)(Math.random() * 4);
+
+        float x, z;
+        switch(corner) {
+            case 0: // Northeast corner
+                x = spawnDistance;
+                z = spawnDistance;
+                Log.d(TAG, "Monster spawning at NORTHEAST corner");
+                break;
+            case 1: // Northwest corner
+                x = -spawnDistance;
+                z = spawnDistance;
+                Log.d(TAG, "Monster spawning at NORTHWEST corner");
+                break;
+            case 2: // Southeast corner
+                x = spawnDistance;
+                z = -spawnDistance;
+                Log.d(TAG, "Monster spawning at SOUTHEAST corner");
+                break;
+            case 3: // Southwest corner
+                x = -spawnDistance;
+                z = -spawnDistance;
+                Log.d(TAG, "Monster spawning at SOUTHWEST corner");
+                break;
+            default:
+                x = spawnDistance;
+                z = spawnDistance;
                 break;
         }
 
@@ -180,8 +224,10 @@ public class CoreLogicManager implements MotionListener {
         playerDistance = 0f;
         playerTopSpeed = 0f;
 
+        // Reset motion tracker - clears accumulated distance and speed
         motionTracker.reset();
 
+        // Reinitialize monster and map with random spawn position
         Vector3 spawnPos = genSpawnPosition();
         Monster monster = new Monster(spawnPos);
         gameMap = new GameMap(spawnPos, monster);
@@ -191,22 +237,29 @@ public class CoreLogicManager implements MotionListener {
         Log.d(TAG, "Game state reset");
     }
 
-    public void endGame() {
+    /**
+     * player has either quit or has lost the game
+     */
+    public void endGame(){
+        // Save current game distance before resetting
         float currentGameDistance = playerDistance;
         float currentGameTopSpeed = playerTopSpeed;
 
-        if (dataManager.loadData("HighScore", "Distance") < currentGameDistance) {
+        //updates new highscores
+        if(dataManager.loadData("HighScore", "Distance") < currentGameDistance){
             dataManager.saveData("HighScore", "Distance", currentGameDistance);
         }
-        if (currentGameTopSpeed > dataManager.loadData("HighScore", "TopSpeed")) {
+        if(currentGameTopSpeed > dataManager.loadData("HighScore", "TopSpeed")){
             dataManager.saveData("HighScore", "TopSpeed", currentGameTopSpeed);
         }
 
+        // Update total distance across all games
         float totalDistanceRan = dataManager.loadData("HighScore", "TotalDistance") + currentGameDistance;
         dataManager.saveData("HighScore", "TotalDistance", totalDistanceRan);
 
         Log.d(TAG, String.format("Game ended - Distance: %.2fm, Total: %.2fm", currentGameDistance, totalDistanceRan));
 
+        //end game logic
         stopGame();
     }
 

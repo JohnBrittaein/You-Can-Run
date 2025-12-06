@@ -17,7 +17,12 @@ public class Monster {
 
     public Monster(Vector3 startPos) {
         this.position = startPos;
-        this.distanceToPlayer = position.length();
+        this.velocity = new Vector3(0,0,0);
+        this.distanceToPlayer = (float) Math.sqrt(
+                position.x * position.x +
+                        position.y * position.y +
+                        position.z * position.z
+        );
         this.baseSpeed = 0.75f;
         this.enragement = 1.0f;
         Log.d(TAG, "Monster created");
