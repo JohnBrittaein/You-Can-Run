@@ -122,9 +122,6 @@ public class MotionTracker implements SensorEventListener {
         Log.d(TAG, "MotionTracker reset - distance and speed cleared");
     }
 
-    // Create SpeedListener
-    private MotionListener motionListener;
-
     public void setMotionListener(MotionListener listener) {
         this.motionListener = listener;
     }

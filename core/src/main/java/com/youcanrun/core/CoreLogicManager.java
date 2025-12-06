@@ -42,34 +42,6 @@ public class CoreLogicManager implements MotionListener {
         Log.d(TAG, "CoreLogicManager initialized");
     }
 
-    private Vector3 genSpawnPosition() {
-        float spawnDistance = 100.0f;
-        float yHeight = 100.0f;
-        int corner = (int) (Math.random() * 4);
-
-        float x, z;
-        switch (corner) {
-            case 0:
-                x = spawnDistance;
-                z = spawnDistance;
-                break;
-            case 1:
-                x = -spawnDistance;
-                z = spawnDistance;
-                break;
-            case 2:
-                x = spawnDistance;
-                z = -spawnDistance;
-                break;
-            default:
-                x = -spawnDistance;
-                z = -spawnDistance;
-                break;
-        }
-
-        return new Vector3(x, yHeight, z);
-    }
-
     /**
      * Generate a random spawn position in one of the four corners of the map
      * @return Vector3 spawn position in world coordinates

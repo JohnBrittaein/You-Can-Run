@@ -17,7 +17,6 @@ public class Monster {
 
     public Monster(Vector3 startPos) {
         this.position = startPos;
-        this.velocity = new Vector3(0,0,0);
         this.distanceToPlayer = (float) Math.sqrt(
                 position.x * position.x +
                         position.y * position.y +

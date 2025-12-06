@@ -15,8 +15,6 @@ public class CompassView extends View {
     private Paint paintPlayer = new Paint();
     private Vector3 playerDirection = new Vector3(0, 0, 1); // default facing +Z
 
-    private Paint circlePaint;
-
     public CompassView(Context context) {
         super(context);
         init();
